@@ -4,7 +4,7 @@ package prairie
 	This is the entry point to the framework. All helper functions/libraries are placed in the folder ./lib.
 	MAKE SURE THIS PROJECT IS LOCATED IN YOUR SRC FOLDER OF GO PATH UNDER THE FOLDER "prairie"
 
-	TODO: implement the actual server loop. I think this will be a really good resource: https://forum.golangbridge.org/t/multithreaded-tcp-server-solved/4540
+	TODO: implement the actual server loop. I think this will be a really good resource: https://golang.org/pkg/net/#example_Listener
 	TODO: add lib for dealing with JSON 
 	TODO: add lib to gzip reponse bodies 
 	TODO: add the Request and Response structs as parameters to RequestCallback
