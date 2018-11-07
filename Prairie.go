@@ -5,12 +5,14 @@ package prairie
 	MAKE SURE THIS PROJECT IS LOCATED IN YOUR SRC FOLDER OF GO PATH UNDER THE FOLDER "prairie"
 
 	TODO: implement the actual server loop. I think this will be a really good resource: https://golang.org/pkg/net/#example_Listener
-	TODO: add lib for dealing with JSON 
-	TODO: add lib to gzip reponse bodies 
+	TODO: implement function handleRequest (KEEP PRIVATE)
 	TODO: add the Request and Response structs as parameters to RequestCallback
 	TODO: add a Response struct to NewPrairieInstance so the user can set a default template for reponses. If on is not passed in 
-		  then a default Reponse struct should be created that autofills certain headers.
-	TODO: implement function handleRequest (KEEP PRIVATE)
+	then a default Reponse struct should be created that autofills certain headers.
+	TODO: add lib for dealing with JSON 
+	TODO: add lib to gzip reponse bodies 
+	TODO: add an in memory session store. 
+	TODO: add lib for dealing with cookies (Adding to a response, checking if they are present or equal to some value)
 */
 
 import (
@@ -49,7 +51,8 @@ func NewPrairieInstance(ip string, port int) Prairie {
 	return p
 }
 
-// Start - a function used to start the server.
+// Start - a function used to start the server. 
+// https://golang.org/pkg/net/#example_Listener
 func (p Prairie) Start() {
 	fmt.Println("The server is being started")
 	getKeys := reflect.ValueOf(p.getMappings).MapKeys()   //programmatically get the get request keys from the map
