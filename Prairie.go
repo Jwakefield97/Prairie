@@ -12,6 +12,7 @@ package prairie
 	TODO: add lib for dealing with JSON: https://golang.org/pkg/compress/gzip/
 	TODO: add lib to gzip reponse bodies 
 	TODO: add an in memory session store. 
+	TODO: add template rendering: https://gowebexamples.com/templates/
 */
 
 import (
