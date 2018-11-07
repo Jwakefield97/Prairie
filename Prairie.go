@@ -4,19 +4,22 @@ package prairie
 	This is the entry point to the framework. All helper functions/libraries are placed in the folder ./lib.
 	MAKE SURE THIS PROJECT IS LOCATED IN YOUR SRC FOLDER OF GO PATH UNDER THE FOLDER "prairie"
 
-	TODO: add struct for HTTP status
-	TODO: add struct for headers
-	TODO: add struct for requests (should contain a struct for headers)
+	TODO: add lib for dealing with JSON 
+	TODO: add lib to gzip reponse bodies 
+	TODO: add the Request and Response structs as parameters to RequestCallback
+	TODO: add a Response struct to NewPrairieInstance so the user can set a default template for reponses. If on is not passed in 
+		  then a default Reponse struct should be created that autofills certain headers.
+	TODO: implement function handleRequest (KEEP PRIVATE)
 */
 
 import (
 	"fmt"
 	"reflect"
+	//"prairie/lib/http"
 	//"prairie/lib/utils"
 )
 
 // RequestCallback - a callback function passed to the Get or Post functions to be called when a url mapping is mapped.
-//TODO: add parameters to the callback that pass in the request information as a struct
 type RequestCallback func()
 
 // Prairie - the server struct to act as an interface to the framework.
@@ -55,7 +58,6 @@ func (p Prairie) Start() {
 	p.postMappings[postKeys[0].String()]() //call the callback of the first mapping the in keys for post requests
 }
 
-//TODO: implement me (KEEP PRIVATE)
 // This will be the function that is used to handle incoming requests in a new go routine
 func handleRequest() {
 
