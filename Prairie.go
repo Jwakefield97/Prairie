@@ -12,7 +12,6 @@ package prairie
 	TODO: add lib for dealing with JSON 
 	TODO: add lib to gzip reponse bodies 
 	TODO: add an in memory session store. 
-	TODO: add lib for dealing with cookies (Adding to a response, checking if they are present or equal to some value)
 */
 
 import (
