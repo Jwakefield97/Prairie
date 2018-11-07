@@ -9,9 +9,14 @@ package prairie
 	TODO: add the Request and Response structs as parameters to RequestCallback
 	TODO: add a Response struct to NewPrairieInstance so the user can set a default template for reponses. If on is not passed in 
 	then a default Reponse struct should be created that autofills certain headers.
+	
+	TODO: add an in memory session store. 
+	TODO: pass the session data structure to the RequestCallback function to be used in the request. 
+	TODO: add authentication filter to routes. Use a function chaining pattern (like https://www.calhoun.io/using-functional-options-instead-of-method-chaining-in-go/).
+	With the chaining style it would look like app.Get("/admin",callBack).isAuthenticated(). Authenticate based on session vars that the user sets.
+
 	TODO: add lib for dealing with JSON: https://golang.org/pkg/compress/gzip/
 	TODO: add lib to gzip reponse bodies 
-	TODO: add an in memory session store. 
 	TODO: add template rendering: https://gowebexamples.com/templates/
 */
 
