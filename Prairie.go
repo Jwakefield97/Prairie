@@ -22,8 +22,11 @@ package prairie
 
 import (
 	"fmt"
+	"io"
+	"io/ioutil"
+	"log"
+	"net"
 	"prairie/lib/http"
-	"reflect"
 	//"prairie/lib/utils"
 )
 
@@ -71,32 +74,62 @@ func (p Prairie) Start() {
 	//TODO: add server loop
 	//TODO: spawn routine to handle request
 
-	handleRequest(p)
+	// Listen on TCP port 2000 on all available unicast and
+	// anycast IP addresses of the local system.
+	addr := net.TCPAddr{
+		IP:   net.ParseIP("127.0.0.1"),
+		Port: 2000,
+	}
+	//listen for incoming connections
+	listener, err := net.ListenTCP("tcp", &addr)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer listener.Close() //defer close of listener to the end of infinite for loop
+	for {
+		// Wait for a connection.
+		conn, err := listener.AcceptTCP()
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		//spawn new routine to handle incoming connections
+		go handleRequest(p, conn)
+	}
+
 }
 
 // This will be the function that is used to handle incoming requests in a new go routine
 //TODO: add the TCPConn socket object as a parameter to this function
-func handleRequest(p Prairie) {
+func handleRequest(p Prairie, conn *net.TCPConn) {
+
+	//read all of the request bytes
+	rc := io.ReadCloser(conn)
+	msg, _ := ioutil.ReadAll(rc)
+
+	fmt.Println(string(msg[:]))
+	conn.Write(msg)
 	//TODO: parse request
 
 	//TODO: set stay alive if the keep alive header is set
 
 	//TODO: create route object based on the request sent and the response template provided at config to pass to callback. This is just a place holder for Request obj
-	routeObj := RouteObject{
-		Request: http.Request{
-			Path: "this is a test path",
-		},
-		Response: http.Response{},
-	}
+	// routeObj := RouteObject{
+	// 	Request: http.Request{
+	// 		Path: "this is a test path",
+	// 	},
+	// 	Response: http.Response{},
+	// }
 
 	//TODO: map request to proper route
-	getKeys := reflect.ValueOf(p.getMappings).MapKeys()   //programmatically get the get request keys from the map
-	postKeys := reflect.ValueOf(p.postMappings).MapKeys() //programmatically get the post request keys from the map
+	//getKeys := reflect.ValueOf(p.getMappings).MapKeys()   //programmatically get the get request keys from the map
+	//postKeys := reflect.ValueOf(p.postMappings).MapKeys() //programmatically get the post request keys from the map
 
 	//TODO: call callback for route and
-	p.getMappings[getKeys[0].String()](&routeObj)   //call the callback of the first mapping the in keys for get requests
-	p.postMappings[postKeys[0].String()](&routeObj) //call the callback of the first mapping the in keys for post requests
-	fmt.Println(routeObj.Request.Path)              //print out the modified path from the route REMOVE ME
+	//p.getMappings[getKeys[0].String()](&routeObj)   //call the callback of the first mapping the in keys for get requests
+	//p.postMappings[postKeys[0].String()](&routeObj) //call the callback of the first mapping the in keys for post requests
+	//fmt.Println(routeObj.Request.Path)              //print out the modified path from the route REMOVE ME
 
 	//TODO: process response and send it to client
+	conn.Close()
 }
