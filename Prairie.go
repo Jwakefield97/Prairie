@@ -4,11 +4,11 @@ package prairie
 	This is the entry point to the framework. All helper functions/libraries are placed in the folder ./lib.
 	MAKE SURE THIS PROJECT IS LOCATED IN YOUR SRC FOLDER OF GO PATH UNDER THE FOLDER "prairie"
 
-	TODO: implement the actual server loop. I think this will be a really good resource: https://golang.org/pkg/net/#example_Listener
-	TODO: implement function handleRequest (KEEP PRIVATE)
-	TODO: add the Request and Response structs as parameters to RequestCallback
 	TODO: add a Response struct to NewPrairieInstance so the user can set a default template for reponses. If on is not passed in
 	then a default Reponse struct should be created that autofills certain headers.
+
+	TODO: add configuration for setting the resource directory
+	TODO: add configuration for setting the html/template directory
 
 	TODO: add an in memory session store.
 	TODO: pass the session data structure to the RequestCallback function to be used in the request.
@@ -26,7 +26,7 @@ import (
 	"log"
 	"net"
 	"prairie/lib/http"
-	//"prairie/lib/utils"
+	"prairie/lib/utils"
 )
 
 // RouteObject - the object passed to the router methods that holds the request and response.
@@ -70,8 +70,6 @@ func NewPrairieInstance(ip string, port int) Prairie {
 // https://golang.org/pkg/net/#example_Listener
 func (p Prairie) Start() {
 	fmt.Println("The server is being started")
-	//TODO: add server loop
-	//TODO: spawn routine to handle request
 
 	// Listen on TCP port 2000 on all available unicast and
 	// anycast IP addresses of the local system.
@@ -100,7 +98,6 @@ func (p Prairie) Start() {
 }
 
 // This will be the function that is used to handle incoming requests in a new go routine
-//TODO: add the TCPConn socket object as a parameter to this function
 func handleRequest(p Prairie, conn *net.TCPConn) {
 	defer conn.Close()
 	//read all of the request bytes
@@ -112,10 +109,8 @@ func handleRequest(p Prairie, conn *net.TCPConn) {
 		}
 	}
 
-	fmt.Println(string(buf))
-
-	//TODO: parse request
-
+	request := utils.ParseHTTPRequest(string(buf))
+	fmt.Println(request.Path)
 	//TODO: set stay alive if the keep alive header is set
 
 	//TODO: create route object based on the request sent and the response template provided at config to pass to callback. This is just a place holder for Request obj
