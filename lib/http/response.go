@@ -6,6 +6,8 @@ package http
 	response headers and payload.
 */
 
+//TODO: add struct functions to deal with templates and various operations by the user
+
 // Response - a struct to model/modify responses.
 type Response struct {
 	Status         HttpStatus
@@ -27,5 +29,12 @@ func NewResponse() Response {
 	r.File = ""
 	r.Headers = map[string]string{}
 	r.Text = ""
+	return r
+}
+
+// GetDefaultResponse - get the default response struct with preset headers
+func GetDefaultResponse() Response {
+	r := NewResponse()
+	//TODO: add default headers
 	return r
 }

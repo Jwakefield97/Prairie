@@ -4,9 +4,6 @@ package prairie
 	This is the entry point to the framework. All helper functions/libraries are placed in the folder ./lib.
 	MAKE SURE THIS PROJECT IS LOCATED IN YOUR SRC FOLDER OF GO PATH UNDER THE FOLDER "prairie"
 
-	TODO: add a Response struct to NewPrairieInstance so the user can set a default template for reponses. If on is not passed in
-	then a default Reponse struct should be created that autofills certain headers.
-
 	TODO: add configuration for setting the resource directory
 	TODO: add configuration for setting the html/template directory
 
@@ -42,10 +39,11 @@ type RequestCallback func(routeObj *RouteObject)
 
 // Prairie - the server struct to act as an interface to the framework.
 type Prairie struct {
-	ip           string
-	port         int
-	getMappings  map[string]RequestCallback //all get and post request mappings
-	postMappings map[string]RequestCallback //all get and post request mappings
+	ip              string
+	port            int
+	getMappings     map[string]RequestCallback //all get and post request mappings
+	postMappings    map[string]RequestCallback //all get and post request mappings
+	DefaultResponse http.Response
 }
 
 // Get - a function for adding a get request mapping to the server.
@@ -64,6 +62,7 @@ func NewPrairieInstance(ip string, port int) Prairie {
 	p := Prairie{ip: ip, port: port}
 	p.getMappings = map[string]RequestCallback{} //instantiate maps
 	p.postMappings = map[string]RequestCallback{}
+	p.DefaultResponse = http.GetDefaultResponse()
 	return p
 }
 
@@ -116,7 +115,7 @@ func handleRequest(p Prairie, conn *net.TCPConn) {
 
 	routeObj := RouteObject{
 		Request:  request,
-		Response: http.Response{},
+		Response: p.DefaultResponse,
 	}
 
 	//match routes and call callback
