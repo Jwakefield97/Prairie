@@ -10,7 +10,7 @@ import (
 */
 func main() {
 	fmt.Println("This is the a driver to test the framework.")
-	app := prairie.NewPrairieInstance("127.0.0.1", 3000)
+	app := prairie.NewPrairieInstance("127.0.0.1", 2000)
 
 	app.Get("/index", func(routeObj *prairie.RouteObject) {
 		fmt.Println("***Inside of the index callback***")

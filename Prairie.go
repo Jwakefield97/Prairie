@@ -70,13 +70,13 @@ func NewPrairieInstance(ip string, port int) Prairie {
 // Start - a function used to start the server.
 // https://golang.org/pkg/net/#example_Listener
 func (p Prairie) Start() {
-	fmt.Println("The server is being started")
+	fmt.Printf("The server is being started on %s:%d", p.ip, p.port)
 
 	// Listen on TCP port 2000 on all available unicast and
 	// anycast IP addresses of the local system.
 	addr := net.TCPAddr{
-		IP:   net.ParseIP("127.0.0.1"),
-		Port: 2000,
+		IP:   net.ParseIP(p.ip),
+		Port: p.port,
 	}
 	//listen for incoming connections
 	listener, err := net.ListenTCP("tcp", &addr)
