@@ -110,7 +110,7 @@ func handleRequest(p Prairie, conn *net.TCPConn) {
 	}
 
 	request := utils.ParseHTTPRequest(string(buf))
-	fmt.Println(request.Path)
+	fmt.Println(request.Parameters)
 	//TODO: set stay alive if the keep alive header is set
 
 	//TODO: create route object based on the request sent and the response template provided at config to pass to callback. This is just a place holder for Request obj

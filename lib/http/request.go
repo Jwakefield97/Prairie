@@ -7,10 +7,12 @@ package http
 
 // Request - a struct used to model/modify requests
 type Request struct {
-	Type    string //Request type (GET,POST,PUT,DELETE). Probably need to make this a struct of constants
-	Path    string
-	Version string            //http version of the request. Most commonly HTTP/1.1
-	Headers map[string]string //headers contained in the request
+	Type       string            //Request type (GET,POST,PUT,DELETE). Probably need to make this a struct of constants
+	FullPath   string            //full path including paramters
+	Path       string            //just the path
+	Version    string            //http version of the request. Most commonly HTTP/1.1
+	Headers    map[string]string //headers contained in the request
+	Parameters map[string]string //parameters from the path
 }
 
 // NewRequest - return an initialized Reqest struct
@@ -18,7 +20,9 @@ func NewRequest() Request {
 	r := Request{}
 	r.Type = ""
 	r.Path = ""
+	r.FullPath = ""
 	r.Version = ""
 	r.Headers = map[string]string{}
+	r.Parameters = map[string]string{}
 	return r
 }
