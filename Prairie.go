@@ -23,7 +23,6 @@ package prairie
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"net"
 	"prairie/lib/http"
@@ -91,6 +90,7 @@ func (p Prairie) Start() {
 		conn, err := listener.AcceptTCP()
 		if err != nil {
 			log.Fatal(err)
+			continue
 		}
 
 		//spawn new routine to handle incoming connections
@@ -102,13 +102,18 @@ func (p Prairie) Start() {
 // This will be the function that is used to handle incoming requests in a new go routine
 //TODO: add the TCPConn socket object as a parameter to this function
 func handleRequest(p Prairie, conn *net.TCPConn) {
-
+	defer conn.Close()
 	//read all of the request bytes
-	rc := io.ReadCloser(conn)
-	msg, _ := ioutil.ReadAll(rc)
+	buf := make([]byte, 10000) // 10KB buffer. most browsers limit requests to 8KB. this needs to be changed to be more dynamic
+	_, err := conn.Read(buf)
+	if err != nil {
+		if err != io.EOF {
+			fmt.Println("read error:", err)
+		}
+	}
 
-	fmt.Println(string(msg[:]))
-	conn.Write(msg)
+	fmt.Println(string(buf))
+
 	//TODO: parse request
 
 	//TODO: set stay alive if the keep alive header is set
@@ -131,5 +136,4 @@ func handleRequest(p Prairie, conn *net.TCPConn) {
 	//fmt.Println(routeObj.Request.Path)              //print out the modified path from the route REMOVE ME
 
 	//TODO: process response and send it to client
-	conn.Close()
 }
