@@ -89,7 +89,7 @@ func (p Prairie) Start() {
 		conn, err := listener.AcceptTCP()
 		if err != nil {
 			log.Fatal(err)
-			continue
+			continue //continue on error to keep the server up
 		}
 
 		//spawn new routine to handle incoming connections
