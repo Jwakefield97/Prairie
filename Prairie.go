@@ -27,6 +27,7 @@ import (
 	"net"
 	"prairie/lib/http"
 	"prairie/lib/utils"
+	"strings"
 )
 
 // RouteObject - the object passed to the router methods that holds the request and response.
@@ -113,22 +114,21 @@ func handleRequest(p Prairie, conn *net.TCPConn) {
 	fmt.Println(request.Parameters)
 	//TODO: set stay alive if the keep alive header is set
 
-	//TODO: create route object based on the request sent and the response template provided at config to pass to callback. This is just a place holder for Request obj
-	// routeObj := RouteObject{
-	// 	Request: http.Request{
-	// 		Path: "this is a test path",
-	// 	},
-	// 	Response: http.Response{},
-	// }
+	routeObj := RouteObject{
+		Request:  request,
+		Response: http.Response{},
+	}
 
-	//TODO: map request to proper route
-	//getKeys := reflect.ValueOf(p.getMappings).MapKeys()   //programmatically get the get request keys from the map
-	//postKeys := reflect.ValueOf(p.postMappings).MapKeys() //programmatically get the post request keys from the map
-
-	//TODO: call callback for route and
-	//p.getMappings[getKeys[0].String()](&routeObj)   //call the callback of the first mapping the in keys for get requests
-	//p.postMappings[postKeys[0].String()](&routeObj) //call the callback of the first mapping the in keys for post requests
-	//fmt.Println(routeObj.Request.Path)              //print out the modified path from the route REMOVE ME
+	//match routes and call callback
+	if strings.EqualFold(request.Type, "get") {
+		if callback, ok := p.getMappings[request.Path]; ok { //if mapping was found
+			callback(&routeObj)
+		}
+	} else if strings.EqualFold(request.Type, "post") {
+		if callback, ok := p.postMappings[request.Path]; ok {
+			callback(&routeObj)
+		}
+	}
 
 	//TODO: process response and send it to client
 }

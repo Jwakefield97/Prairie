@@ -14,7 +14,7 @@ func main() {
 
 	app.Get("/index", func(routeObj *prairie.RouteObject) {
 		fmt.Println("***Inside of the index callback***")
-		fmt.Println(routeObj.Request.Path)
+		fmt.Println(routeObj.Request.Parameters)
 	})
 
 	app.Post("/uploads", func(routeObj *prairie.RouteObject) {
