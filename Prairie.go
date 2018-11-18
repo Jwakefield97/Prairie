@@ -4,9 +4,6 @@ package prairie
 	This is the entry point to the framework. All helper functions/libraries are placed in the folder ./lib.
 	MAKE SURE THIS PROJECT IS LOCATED IN YOUR SRC FOLDER OF GO PATH UNDER THE FOLDER "prairie"
 
-	TODO: add configuration for setting the resource directory
-	TODO: add configuration for setting the html/template directory
-
 	TODO: add an in memory session store.
 	TODO: pass the session data structure to the RequestCallback function to be used in the request.
 	TODO: add authentication filter to routes. Use a function chaining pattern (like https://www.calhoun.io/using-functional-options-instead-of-method-chaining-in-go/).
@@ -41,6 +38,8 @@ type RequestCallback func(routeObj *RouteObject)
 type Prairie struct {
 	ip              string
 	port            int
+	templateDir     string
+	resourceDir     string
 	getMappings     map[string]RequestCallback //all get and post request mappings
 	postMappings    map[string]RequestCallback //all get and post request mappings
 	DefaultResponse http.Response
@@ -54,6 +53,16 @@ func (p Prairie) Get(url string, callback RequestCallback) {
 // Post - a function for adding a post request mapping to the server.
 func (p Prairie) Post(url string, callback RequestCallback) {
 	p.postMappings[url] = callback
+}
+
+// SetTemplateDir - a function to set the resource directory
+func (p Prairie) SetTemplateDir(dir string) {
+	p.templateDir = dir
+}
+
+// SetResourceDir - a function to set the static resource directory
+func (p Prairie) SetResourceDir(dir string) {
+	p.resourceDir = dir
 }
 
 // NewPrairieInstance - a funciton to create a new Prairie server instance.

@@ -11,6 +11,8 @@ import (
 func main() {
 	fmt.Println("This is the a driver to test the framework.")
 	app := prairie.NewPrairieInstance("127.0.0.1", 2000)
+	app.SetResourceDir("resources")
+	app.SetTemplateDir("templates")
 
 	app.Get("/index", func(routeObj *prairie.RouteObject) {
 		fmt.Println("***Inside of the index callback***")
