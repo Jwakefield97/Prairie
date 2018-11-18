@@ -5,8 +5,8 @@ import (
 	"strings"
 )
 
-// parsePathParamters - used to parse parameters from the path
-func parsePathParamters(request *http.Request) {
+// parseQueryParamters - used to parse parameters from the path
+func parseQueryParamters(request *http.Request) {
 	pathArr := strings.Split(request.FullPath, "?")
 	request.Path = pathArr[0] //set Path this should always exist
 	if len(pathArr) > 1 {     //parameters are present
@@ -33,15 +33,16 @@ func ParseHTTPRequest(requestStr string) http.Request {
 				request.Type = statusStr[0]
 				request.FullPath = statusStr[1]
 				request.Version = statusStr[2]
-				parsePathParamters(&request) //parse the parameters out of the path
+				parseQueryParamters(&request) //parse the parameters out of the path
 			}
 		} else {
-			header := strings.Split(row, ":")
+			header := strings.SplitN(row, ":", 2) //TODO: parse rest of post request here
 			//TODO: make this more robust
 			if len(header) == 2 {
-				request.Headers[header[0]] = header[1]
+				request.Headers[strings.TrimSpace(header[0])] = header[1]
 			}
 		}
 	}
+	ParseCookies(&request)
 	return request
 }

@@ -13,6 +13,7 @@ type Request struct {
 	Version    string            //http version of the request. Most commonly HTTP/1.1
 	Headers    map[string]string //headers contained in the request
 	Parameters map[string]string //parameters from the path
+	Cookies    map[string]string //a map of cookies from the http request
 }
 
 // NewRequest - return an initialized Reqest struct
@@ -24,5 +25,6 @@ func NewRequest() Request {
 	r.Version = ""
 	r.Headers = map[string]string{}
 	r.Parameters = map[string]string{}
+	r.Cookies = map[string]string{}
 	return r
 }
