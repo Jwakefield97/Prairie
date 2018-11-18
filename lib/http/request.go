@@ -14,6 +14,7 @@ type Request struct {
 	Headers    map[string]string //headers contained in the request
 	Parameters map[string]string //parameters from the path
 	Cookies    map[string]string //a map of cookies from the http request
+	Body       map[string]string //body of a post request
 }
 
 // NewRequest - return an initialized Reqest struct
@@ -26,5 +27,6 @@ func NewRequest() Request {
 	r.Headers = map[string]string{}
 	r.Parameters = map[string]string{}
 	r.Cookies = map[string]string{}
+	r.Body = map[string]string{}
 	return r
 }

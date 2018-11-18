@@ -25,6 +25,7 @@ func parseQueryParamters(request *http.Request) {
 func ParseHTTPRequest(requestStr string) http.Request {
 	request := http.NewRequest()
 	rows := strings.Split(requestStr, "\n")
+	isBody := false //whether or not the body is being parsed
 	for index, row := range rows {
 		if index == 0 { //type,path,version line of http request
 			statusStr := strings.Fields(row) //split on whitespace
@@ -36,10 +37,23 @@ func ParseHTTPRequest(requestStr string) http.Request {
 				parseQueryParamters(&request) //parse the parameters out of the path
 			}
 		} else {
-			header := strings.SplitN(row, ":", 2) //TODO: parse rest of post request here
-			//TODO: make this more robust
-			if len(header) == 2 {
-				request.Headers[strings.TrimSpace(header[0])] = header[1]
+			if row == "" {
+				isBody = true //body parsing has begun
+			} else if isBody { //parse body params
+				params := strings.Split(row, "&")
+				for _, param := range params {
+					paramKeyVal := strings.Split(param, "=")
+					if len(paramKeyVal) == 2 {
+						request.Body[strings.TrimSpace(paramKeyVal[0])] = paramKeyVal[1]
+					}
+				}
+			} else {
+				//TODO: parse rest of post request here
+				header := strings.SplitN(row, ":", 2) //split on only the first occurence of :
+				//TODO: make this more robust
+				if len(header) == 2 {
+					request.Headers[strings.TrimSpace(header[0])] = header[1]
+				}
 			}
 		}
 	}

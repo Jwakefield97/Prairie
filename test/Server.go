@@ -41,7 +41,9 @@ func main() {
 	User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36
 
 	say=Hi&to=Mom
+	1=Hi&2=Mom
+	3=Hi&4=Mom
 	`
 	req := utils.ParseHTTPRequest(str)
-	fmt.Println(req.Cookies["name"])
+	fmt.Println(req.Body)
 }
