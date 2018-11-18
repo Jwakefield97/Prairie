@@ -139,4 +139,7 @@ func handleRequest(p Prairie, conn *net.TCPConn) {
 	}
 
 	//TODO: process response and send it to client
+	//responseStr := http.FormHTTPResponse(&routeObj.Response)
+	//send response back to the client
+
 }

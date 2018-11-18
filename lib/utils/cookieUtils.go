@@ -24,8 +24,3 @@ func ParseCookies(request *http.Request) {
 		}
 	}
 }
-
-// AddCookie - add a cookie to a response struct
-func AddCookie(response *http.Response) {
-	//TODO: implment me
-}
