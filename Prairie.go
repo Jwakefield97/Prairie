@@ -22,6 +22,7 @@ import (
 	"prairie/lib/http"
 	"prairie/lib/utils"
 	"strings"
+	"time"
 )
 
 // RouteObject - the object passed to the router methods that holds the request and response.
@@ -137,9 +138,28 @@ func handleRequest(p Prairie, conn *net.TCPConn) {
 			callback(&routeObj)
 		}
 	}
-
+	fmt.Println(time.Now().Format(time.RFC1123))
 	//TODO: process response and send it to client
 	//responseStr := http.FormHTTPResponse(&routeObj.Response)
 	//send response back to the client
+	str := `
+	HTTP/1.1 200 OK
+    Date: Wed, 21 Nov 2018 12:05:20 GMT
+    Server: Apache
+    Last-Modified: Sat, 10 Jul 2004 17:29:19 GMT
+    Accept-Ranges: bytes
+    Content-Length: 71
+    Connection: close
+    Content-Type: image/jpeg
+
+    <html>
+		<head>
+		</head>
+		<body>
+			<b>this is the body.</b>
+		</body>
+	</html>
+	`
+	conn.Write([]byte(str))
 
 }
