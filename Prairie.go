@@ -23,6 +23,8 @@ import (
 	"prairie/lib/utils"
 	"strings"
 	"time"
+	"os"
+	"io/ioutil"
 )
 
 // RouteObject - the object passed to the router methods that holds the request and response.
@@ -120,7 +122,6 @@ func handleRequest(p Prairie, conn *net.TCPConn) {
 	}
 
 	request := utils.ParseHTTPRequest(string(buf))
-	fmt.Println(request.Parameters)
 	//TODO: set stay alive if the keep alive header is set
 
 	routeObj := RouteObject{
@@ -142,24 +143,63 @@ func handleRequest(p Prairie, conn *net.TCPConn) {
 	//TODO: process response and send it to client
 	//responseStr := http.FormHTTPResponse(&routeObj.Response)
 	//send response back to the client
-	str := `
-	HTTP/1.1 200 OK
-    Date: Wed, 21 Nov 2018 12:05:20 GMT
-    Server: Apache
-    Last-Modified: Sat, 10 Jul 2004 17:29:19 GMT
-    Accept-Ranges: bytes
-    Content-Length: 71
-    Connection: close
-    Content-Type: image/jpeg
+	if(request.Path == "/img.jpg"){
+		str := `
+		HTTP/1.1 200 OK
+		Date: Wed, 21 Nov 2018 12:05:20 GMT
+		Server: Prairie
+		Last-Modified: Sat, 10 Jul 2004 17:29:19 GMT
+		Accept-Ranges: bytes
+		Content-Length: 65,739
+		Connection: close
+		Content-Type: text/css
+	
+		`
+		msg := []byte(str)
+		img := getFile("img.jpg")
+		sendMsg := append(msg,img...)
+		conn.Write(sendMsg)
+	}else if (request.Path == "/"){
+		fmt.Println("sending html")
+		str := `
+		HTTP/1.1 200 OK
+		Date: Wed, 21 Nov 2018 10:18:20 CST
+		Server: Prairie
+		Last-Modified: Sat, 10 Jul 2004 17:29:19 GMT
+		Accept-Ranges: bytes
+		Content-Length: 128
+		Connection: close
+		Content-Type: text/html
 
-    <html>
-		<head>
-		</head>
-		<body>
-			<b>this is the body.</b>
-		</body>
-	</html>
-	`
-	conn.Write([]byte(str))
+		<html>
+			<head>
+			</head>
+			<body>
+				<b> this is an image </b>
+				<img src="127.0.0.1:2000/img.jpg"/>
+			</body>
+		</html>
+		`
+		conn.Write([]byte(str))
+	}
 
+}
+
+//TODO: move this to the proper file
+func getFile(name string) []byte {
+	// Open file for reading
+	file, err := os.Open(name)
+	defer file.Close()
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    data, err := ioutil.ReadAll(file)
+    if err != nil {
+        log.Fatal(err)
+	}
+	
+	
+
+    return data
 }
