@@ -22,9 +22,6 @@ import (
 	"prairie/lib/http"
 	"prairie/lib/utils"
 	"strings"
-	"time"
-	"os"
-	"io/ioutil"
 )
 
 // RouteObject - the object passed to the router methods that holds the request and response.
@@ -41,8 +38,8 @@ type RequestCallback func(routeObj *RouteObject)
 type Prairie struct {
 	ip              string
 	port            int
-	templateDir     string
-	resourceDir     string
+	TemplateDir     string
+	ResourceDir     string
 	getMappings     map[string]RequestCallback //all get and post request mappings
 	postMappings    map[string]RequestCallback //all get and post request mappings
 	DefaultResponse http.Response
@@ -56,16 +53,6 @@ func (p Prairie) Get(url string, callback RequestCallback) {
 // Post - a function for adding a post request mapping to the server.
 func (p Prairie) Post(url string, callback RequestCallback) {
 	p.postMappings[url] = callback
-}
-
-// SetTemplateDir - a function to set the resource directory
-func (p Prairie) SetTemplateDir(dir string) {
-	p.templateDir = dir
-}
-
-// SetResourceDir - a function to set the static resource directory
-func (p Prairie) SetResourceDir(dir string) {
-	p.resourceDir = dir
 }
 
 // NewPrairieInstance - a funciton to create a new Prairie server instance.
@@ -128,78 +115,32 @@ func handleRequest(p Prairie, conn *net.TCPConn) {
 		Request:  request,
 		Response: p.DefaultResponse,
 	}
+	responseMsg := make([]byte,0)
 
 	//match routes and call callback
 	if strings.EqualFold(request.Type, "get") {
 		if callback, ok := p.getMappings[request.Path]; ok { //if mapping was found
 			callback(&routeObj)
+			responseMsg = http.FormHTTPResponse(&routeObj.Response)
 		}
 	} else if strings.EqualFold(request.Type, "post") {
 		if callback, ok := p.postMappings[request.Path]; ok {
 			callback(&routeObj)
+			responseMsg = http.FormHTTPResponse(&routeObj.Response)
 		}
-	}
-	fmt.Println(time.Now().Format(time.RFC1123))
-	//TODO: process response and send it to client
-	//responseStr := http.FormHTTPResponse(&routeObj.Response)
-	//send response back to the client
-	if(request.Path == "/img.jpg"){
-		str := `
-		HTTP/1.1 200 OK
-		Date: Wed, 21 Nov 2018 12:05:20 GMT
-		Server: Prairie
-		Last-Modified: Sat, 10 Jul 2004 17:29:19 GMT
-		Accept-Ranges: bytes
-		Content-Length: 65,739
-		Connection: close
-		Content-Type: text/css
+	} 
 	
-		`
-		msg := []byte(str)
-		img := getFile("img.jpg")
-		sendMsg := append(msg,img...)
-		conn.Write(sendMsg)
-	}else if (request.Path == "/"){
-		fmt.Println("sending html")
-		str := `
-		HTTP/1.1 200 OK
-		Date: Wed, 21 Nov 2018 10:18:20 CST
-		Server: Prairie
-		Last-Modified: Sat, 10 Jul 2004 17:29:19 GMT
-		Accept-Ranges: bytes
-		Content-Length: 128
-		Connection: close
-		Content-Type: text/html
-
-		<html>
-			<head>
-			</head>
-			<body>
-				<b> this is an image </b>
-				<img src="127.0.0.1:2000/img.jpg"/>
-			</body>
-		</html>
-		`
-		conn.Write([]byte(str))
+	//try to find static resource if not matched by route
+	if(strings.HasPrefix(request.Path[1:],p.ResourceDir)){ //if a public resource was requested
+		routeObj.Response.File = request.Path[1:]
+		responseMsg = http.FormHTTPResponse(&routeObj.Response)
 	}
 
-}
-
-//TODO: move this to the proper file
-func getFile(name string) []byte {
-	// Open file for reading
-	file, err := os.Open(name)
-	defer file.Close()
-    if err != nil {
-        log.Fatal(err)
-    }
-
-    data, err := ioutil.ReadAll(file)
-    if err != nil {
-        log.Fatal(err)
+	
+	//fmt.Println(time.Now().Format(time.RFC1123))
+	if(len(responseMsg) > 0){ //if less than 0 it is an invalid request
+		fmt.Println(string(responseMsg))
+		conn.Write(responseMsg)
 	}
-	
-	
 
-    return data
 }
