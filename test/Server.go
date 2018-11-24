@@ -38,6 +38,10 @@ func main() {
 		}
 	})
 
+	app.Get("/plain", func(routeObj *prairie.RouteObject) {
+		routeObj.Response.File = "templates/test.g"
+	})
+
 	app.Get("/index", func(routeObj *prairie.RouteObject) {
 		routeObj.Response.Html = "<b>Hello from the index page</b>"
 	})

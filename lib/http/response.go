@@ -117,7 +117,10 @@ func FormHTTPResponse(response *Response, templatePath string) []byte {
 			response.Headers["Content-Type"] = "image/gif"
 		case "mpeg":
 			response.Headers["Content-Type"] = "audio/mpeg"
+		default:
+			response.Headers["Content-Type"] = "text/plain" //default to plain text if no file type matches
 		}
+
 	}
 	response.Headers["Content-Length"] = strconv.Itoa(len(response.Payload))
 
