@@ -24,6 +24,9 @@ import (
 	"strings"
 )
 
+// BufferSize - the size of the buffer to receive from the socket
+const BufferSize = 10000
+
 // RouteObject - the object passed to the router methods that holds the request and response.
 //TODO: add pointer to session object
 type RouteObject struct {
@@ -100,45 +103,59 @@ func (p Prairie) Start() {
 func handleRequest(p Prairie, conn *net.TCPConn) {
 	defer conn.Close()
 	//read all of the request bytes
-	buf := make([]byte, 10000) // 10KB buffer. most browsers limit requests to 8KB. this needs to be changed to be more dynamic
-	_, err := conn.Read(buf)
+	buf := make([]byte, BufferSize) // 10KB buffer. most browsers limit requests to 8KB. this needs to be changed to be more dynamic
+	bytesRead, err := conn.Read(buf)
 	if err != nil {
 		if err != io.EOF {
 			fmt.Println("read error:", err)
 		}
 	}
+	requestStr := string(buf)
+	headerLen, contentLen := utils.GetContentLength(requestStr)
 
-	request := utils.ParseHTTPRequest(string(buf))
+	remainingBytes := contentLen - (bytesRead - headerLen) //calculate remaining bytes to be read
+
+	if remainingBytes > 0 { //if there is more content to pulled from the socket
+		newBuf := make([]byte, remainingBytes) //make a new buffer at the size of the existing bytes to pull from socket
+		_, err := conn.Read(newBuf)
+		if err != nil {
+			if err != io.EOF {
+				fmt.Println("read error:", err)
+			}
+		}
+		requestStr = string(append(buf, newBuf...)) //append the new buffer to the existing buffer
+	}
+
+	request := utils.ParseHTTPRequest(requestStr)
 	//TODO: set stay alive if the keep alive header is set
 
 	routeObj := RouteObject{
 		Request:  request,
 		Response: p.DefaultResponse,
 	}
-	responseMsg := make([]byte,0)
+	responseMsg := make([]byte, 0)
 
 	//match routes and call callback
 	if strings.EqualFold(request.Type, "get") {
 		if callback, ok := p.getMappings[request.Path]; ok { //if mapping was found
 			callback(&routeObj)
 			responseMsg = http.FormHTTPResponse(&routeObj.Response)
+		} else {
+			//try to find static resource if not matched by route
+			if strings.HasPrefix(request.Path[1:], p.ResourceDir) { //if a public resource was requested
+				routeObj.Response.File = request.Path[1:]
+				responseMsg = http.FormHTTPResponse(&routeObj.Response)
+			}
 		}
 	} else if strings.EqualFold(request.Type, "post") {
 		if callback, ok := p.postMappings[request.Path]; ok {
 			callback(&routeObj)
 			responseMsg = http.FormHTTPResponse(&routeObj.Response)
 		}
-	} 
-	
-	//try to find static resource if not matched by route
-	if(strings.HasPrefix(request.Path[1:],p.ResourceDir)){ //if a public resource was requested
-		routeObj.Response.File = request.Path[1:]
-		responseMsg = http.FormHTTPResponse(&routeObj.Response)
 	}
 
-	
 	//fmt.Println(time.Now().Format(time.RFC1123))
-	if(len(responseMsg) > 0){ //if less than 0 it is an invalid request
+	if len(responseMsg) > 0 { //if less than 0 it is an invalid request
 		fmt.Println(string(responseMsg))
 		conn.Write(responseMsg)
 	}

@@ -1,13 +1,13 @@
 package http
 
-import(
+import (
+	"io/ioutil"
+	"log"
+	"os"
+	"path/filepath"
+	"strconv"
 	"strings"
 	"time"
-	"os"
-	"io/ioutil"
-	"path/filepath"
-	"log"
-	"strconv"
 )
 
 /*
@@ -21,15 +21,15 @@ import(
 // Response - a struct to model/modify responses.
 type Response struct {
 	Status         int
-	Template       string            //name of the template to return
-	TemplateParams []interface{}     //array of parameters to pass to the template
-	JSON           []byte            //json to return. I'm pretty sure that golang is marshalled into byte arrays. this might need to be updated later
-	File           string            //location of the file to be returned
-	Html 		   string
+	Template       string        //name of the template to return
+	TemplateParams []interface{} //array of parameters to pass to the template
+	JSON           []byte        //json to return. I'm pretty sure that golang is marshalled into byte arrays. this might need to be updated later
+	File           string        //location of the file to be returned
+	Html           string
 	Text           string            //plain text to be sent back
 	Headers        map[string]string //headers to include in the request
 	Cookies        map[string]string
-	Payload           []byte 
+	Payload        []byte
 }
 
 // NewResponse - constructor for Reponse struct
@@ -70,62 +70,62 @@ func FormHTTPResponse(response *Response) []byte {
 	message := make([]byte, 0)
 	response.Headers["Date"] = time.Now().Format(time.RFC1123)
 	response.Headers["Connection"] = "close"
-	response.Headers["Server"] = "Prairie" 
+	response.Headers["Server"] = "Prairie"
 	response.Headers["Accept-Ranges"] = "bytes"
 
 	if strings.TrimSpace(response.Html) != "" {
 		response.Payload = []byte(response.Html)
 		response.Headers["Content-Type"] = "text/html"
 
-	}else if strings.TrimSpace(string(response.JSON)) != "" {
+	} else if strings.TrimSpace(string(response.JSON)) != "" {
 		response.Payload = response.JSON
 		response.Headers["Content-Type"] = "application/json"
 
-	}else if strings.TrimSpace(response.Text) != "" {
+	} else if strings.TrimSpace(response.Text) != "" {
 		response.Payload = []byte(response.Text)
 		response.Headers["Content-Type"] = "text/plain"
 
-	}else if strings.TrimSpace(response.Template) != ""{
+	} else if strings.TrimSpace(response.Template) != "" {
 		response.Headers["Content-Type"] = "text/html"
 		//TODO: process template from file before setting payload
-		
-	}else if strings.TrimSpace(response.File) != "" {
+
+	} else if strings.TrimSpace(response.File) != "" {
 		file := getFile(response.File)
 		response.Payload = file.Bytes
 		response.Headers["Last-Modified"] = file.Info.ModTime().Format(time.RFC1123)
 		//TODO: check to make sure files have a "."
-		fileType := strings.Split(file.Info.Name(),".")[1]
+		fileType := strings.Split(file.Info.Name(), ".")[1]
 		switch fileType {
-			case "html": 
-				response.Headers["Content-Type"] = "text/html"
-			case "css": 
-				response.Headers["Content-Type"] = "text/css"
-			case "js": 
-				response.Headers["Content-Type"] = "application/javascript"
-			case "png": 
-				response.Headers["Content-Type"] = "image/png"
-			case "jpeg": 
-				response.Headers["Content-Type"] = "image/jpeg"
-			case "gif":
-				response.Headers["Content-Type"] = "image/gif"
-			case "mpeg":
-				response.Headers["Content-Type"] = "audio/mpeg"
+		case "html":
+			response.Headers["Content-Type"] = "text/html"
+		case "css":
+			response.Headers["Content-Type"] = "text/css"
+		case "js":
+			response.Headers["Content-Type"] = "application/javascript"
+		case "png":
+			response.Headers["Content-Type"] = "image/png"
+		case "jpeg":
+			response.Headers["Content-Type"] = "image/jpeg"
+		case "gif":
+			response.Headers["Content-Type"] = "image/gif"
+		case "mpeg":
+			response.Headers["Content-Type"] = "audio/mpeg"
 		}
 	}
 	response.Headers["Content-Length"] = strconv.Itoa(len(response.Payload))
 
-	message = append(message,[]byte("HTTP/1.1 200 \n")...) //start with status line
-	for k, v := range response.Headers { //append headers
+	message = append(message, []byte("HTTP/1.1 200 \n")...) //start with status line
+	for k, v := range response.Headers {                    //append headers
 		header := k + ": " + v + "\n"
 		message = append(message, []byte(header)...)
 	}
-	message = append(message,[]byte("\n")...) //newline between header and body
+	message = append(message, []byte("\n")...) //newline between header and body
 	message = append(message, response.Payload...)
 	return message
 }
 
 type FileStruct struct {
-	Info os.FileInfo
+	Info  os.FileInfo
 	Bytes []byte
 }
 
@@ -135,14 +135,14 @@ func getFile(name string) FileStruct {
 	result := FileStruct{}
 	info, err := os.Stat(absPath) //check if file exists
 	//check the error to make sure it is os.IsNotExist(err)
-	if(err == nil){ 
+	if err == nil {
 		result.Info = info
 		// Open file for reading
 		file, err := os.Open(absPath)
 		defer file.Close()
 		if err != nil {
 			log.Fatal(err)
-		}else {
+		} else {
 			data, err := ioutil.ReadAll(file)
 			if err != nil {
 				log.Fatal(err)

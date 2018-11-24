@@ -2,6 +2,7 @@ package utils
 
 import (
 	"prairie/lib/http"
+	"strconv"
 	"strings"
 )
 
@@ -19,6 +20,24 @@ func parseQueryParamters(request *http.Request) {
 		}
 
 	}
+}
+
+// GetContentLength - a function to get only the header/content length from the request string
+func GetContentLength(requestStr string) (int, int) {
+	contentLen := 0
+	header := []string{}
+	rows := strings.Split(requestStr, "\n")
+	for _, row := range rows {
+		header := strings.SplitN(row, ":", 2)
+		if strings.EqualFold(header[0], "content-length") {
+			i, _ := strconv.Atoi(header[1])
+			contentLen = i
+		} else if row == "" { //once the body is reached break
+			break
+		}
+		header = append(header, row)
+	}
+	return len(header), contentLen
 }
 
 // ParseHTTPRequest - parse an incoming http request and return a Request struct

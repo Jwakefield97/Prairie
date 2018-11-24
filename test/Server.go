@@ -15,17 +15,14 @@ func main() {
 	app.TemplateDir = "templates"
 
 	app.Get("/index", func(routeObj *prairie.RouteObject) {
-		fmt.Println("***Inside of the index callback***")
 		routeObj.Response.Html = "<b>Hello from the index page</b>"
 	})
 
 	app.Get("/file", func(routeObj *prairie.RouteObject) {
-		fmt.Println("***Inside of the index callback***")
 		routeObj.Response.File = "templates/test.html"
 	})
 
 	app.Post("/uploads", func(routeObj *prairie.RouteObject) {
-		fmt.Println("***Inside of the uploads callback***")
 		routeObj.Response.Text = "This is plain text"
 	})
 
