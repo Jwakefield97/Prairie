@@ -63,10 +63,6 @@ func GetDefaultResponse() Response {
 	return r
 }
 
-func (r Response) SetTemplate(key string, val string) {
-	//TODO: implment me
-}
-
 // FormHTTPResponse - a function to form the actual http response
 func FormHTTPResponse(response *Response, templatePath string) []byte {
 	message := make([]byte, 0)
@@ -88,17 +84,17 @@ func FormHTTPResponse(response *Response, templatePath string) []byte {
 		response.Headers["Content-Type"] = "text/plain"
 
 	} else if strings.TrimSpace(response.Template) != "" {
-		absPath, _ := filepath.Abs(templatePath)
+		absPath, _ := filepath.Abs(templatePath) //get absolute path to templates
 
 		response.Headers["Content-Type"] = "text/html"
-		tmpl, _ := template.ParseFiles(absPath + "/" + response.Template + ".p")
+		tmpl, _ := template.ParseFiles(absPath + "/" + response.Template + ".p") //parse the template
 
-		var tempBuf bytes.Buffer
-		if err := tmpl.Execute(&tempBuf, response.TemplateParams); err != nil { //give invalid response
+		var tempBuf bytes.Buffer                                                //buffer to temporarily store template
+		if err := tmpl.Execute(&tempBuf, response.TemplateParams); err != nil { //give invalid response if error occurs
 			fmt.Println(err)
 		}
 
-		response.Payload = []byte(tempBuf.String())
+		response.Payload = []byte(tempBuf.String()) //set the payload of the response
 
 	} else if strings.TrimSpace(response.File) != "" {
 		file := getFile(response.File)
@@ -135,6 +131,7 @@ func FormHTTPResponse(response *Response, templatePath string) []byte {
 	return message
 }
 
+// FileStruct - a struct to hold the file data and information about the file
 type FileStruct struct {
 	Info  os.FileInfo
 	Bytes []byte

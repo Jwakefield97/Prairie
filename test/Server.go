@@ -5,11 +5,13 @@ import (
 	"prairie"
 )
 
+// Todo - a struct to test nesting structs in a template
 type Todo struct {
 	Title string
 	Done  bool
 }
 
+// TodoPageData - a struct to test template rendering and params
 type TodoPageData struct {
 	PageTitle string
 	Todos     []Todo
