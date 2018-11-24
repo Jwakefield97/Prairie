@@ -139,18 +139,18 @@ func handleRequest(p Prairie, conn *net.TCPConn) {
 	if strings.EqualFold(request.Type, "get") {
 		if callback, ok := p.getMappings[request.Path]; ok { //if mapping was found
 			callback(&routeObj)
-			responseMsg = http.FormHTTPResponse(&routeObj.Response)
+			responseMsg = http.FormHTTPResponse(&routeObj.Response, p.TemplateDir)
 		} else {
 			//try to find static resource if not matched by route
 			if strings.HasPrefix(request.Path[1:], p.ResourceDir) { //if a public resource was requested
 				routeObj.Response.File = request.Path[1:]
-				responseMsg = http.FormHTTPResponse(&routeObj.Response)
+				responseMsg = http.FormHTTPResponse(&routeObj.Response, p.TemplateDir)
 			}
 		}
 	} else if strings.EqualFold(request.Type, "post") {
 		if callback, ok := p.postMappings[request.Path]; ok {
 			callback(&routeObj)
-			responseMsg = http.FormHTTPResponse(&routeObj.Response)
+			responseMsg = http.FormHTTPResponse(&routeObj.Response, p.TemplateDir)
 		}
 	}
 

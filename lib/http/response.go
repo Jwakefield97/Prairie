@@ -1,6 +1,9 @@
 package http
 
 import (
+	"bytes"
+	"fmt"
+	"html/template"
 	"io/ioutil"
 	"log"
 	"os"
@@ -21,10 +24,10 @@ import (
 // Response - a struct to model/modify responses.
 type Response struct {
 	Status         int
-	Template       string        //name of the template to return
-	TemplateParams []interface{} //array of parameters to pass to the template
-	JSON           []byte        //json to return. I'm pretty sure that golang is marshalled into byte arrays. this might need to be updated later
-	File           string        //location of the file to be returned
+	Template       string      //name of the template to return
+	TemplateParams interface{} //array of parameters to pass to the template
+	JSON           []byte      //json to return. I'm pretty sure that golang is marshalled into byte arrays. this might need to be updated later
+	File           string      //location of the file to be returned
 	Html           string
 	Text           string            //plain text to be sent back
 	Headers        map[string]string //headers to include in the request
@@ -37,7 +40,6 @@ func NewResponse() Response {
 	r := Response{}
 	r.Status = HTTP_OK
 	r.Template = ""
-	r.TemplateParams = make([]interface{}, 0)
 	r.Html = ""
 	r.JSON = make([]byte, 0)
 	r.File = ""
@@ -66,7 +68,7 @@ func (r Response) SetTemplate(key string, val string) {
 }
 
 // FormHTTPResponse - a function to form the actual http response
-func FormHTTPResponse(response *Response) []byte {
+func FormHTTPResponse(response *Response, templatePath string) []byte {
 	message := make([]byte, 0)
 	response.Headers["Date"] = time.Now().Format(time.RFC1123)
 	response.Headers["Connection"] = "close"
@@ -86,8 +88,17 @@ func FormHTTPResponse(response *Response) []byte {
 		response.Headers["Content-Type"] = "text/plain"
 
 	} else if strings.TrimSpace(response.Template) != "" {
+		absPath, _ := filepath.Abs(templatePath)
+
 		response.Headers["Content-Type"] = "text/html"
-		//TODO: process template from file before setting payload
+		tmpl, _ := template.ParseFiles(absPath + "/" + response.Template + ".p")
+
+		var tempBuf bytes.Buffer
+		if err := tmpl.Execute(&tempBuf, response.TemplateParams); err != nil { //give invalid response
+			fmt.Println(err)
+		}
+
+		response.Payload = []byte(tempBuf.String())
 
 	} else if strings.TrimSpace(response.File) != "" {
 		file := getFile(response.File)
