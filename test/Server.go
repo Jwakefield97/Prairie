@@ -22,7 +22,7 @@ type TodoPageData struct {
 */
 func main() {
 	fmt.Println("This is the a driver to test the framework.")
-	app := prairie.NewPrairieInstance("127.0.0.1", 2000)
+	app := prairie.NewPrairieInstance("localhost", 2000)
 	app.ResourceDir = "resources"
 	app.TemplateDir = "templates"
 
