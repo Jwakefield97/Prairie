@@ -26,7 +26,7 @@ import (
 // BufferSize - the size of the buffer to receive from the socket
 const BufferSize = 10000
 
-// Session - the session store to be accessed through routes
+// Session - the session store to be accessed through routes https://golang.org/pkg/sync/
 var Session sync.Map
 
 // RouteObject - the object passed to the router methods that holds the request and response.
