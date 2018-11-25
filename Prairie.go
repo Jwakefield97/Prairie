@@ -4,14 +4,12 @@ package prairie
 	This is the entry point to the framework. All helper functions/libraries are placed in the folder ./lib.
 	MAKE SURE THIS PROJECT IS LOCATED IN YOUR SRC FOLDER OF GO PATH UNDER THE FOLDER "prairie"
 
-	TODO: add an in memory session store.
-	TODO: pass the session data structure to the RequestCallback function to be used in the request.
+	TODO: add function to set cookies
+
 	TODO: add authentication filter to routes. Use a function chaining pattern (like https://www.calhoun.io/using-functional-options-instead-of-method-chaining-in-go/).
 	With the chaining style it would look like app.Get("/admin",callBack).isAuthenticated(). Authenticate based on session vars that the user sets.
 
-	TODO: add lib for dealing with JSON: https://golang.org/pkg/compress/gzip/
-	TODO: add lib to gzip reponse bodies
-	TODO: add template rendering: https://gowebexamples.com/templates/
+	TODO: add lib to gzip reponse bodies https://golang.org/pkg/compress/gzip/
 */
 
 import (
@@ -22,16 +20,20 @@ import (
 	"prairie/lib/http"
 	"prairie/lib/utils"
 	"strings"
+	"sync"
 )
 
 // BufferSize - the size of the buffer to receive from the socket
 const BufferSize = 10000
 
+// Session - the session store to be accessed through routes
+var Session sync.Map
+
 // RouteObject - the object passed to the router methods that holds the request and response.
-//TODO: add pointer to session object
 type RouteObject struct {
 	Request  http.Request
 	Response http.Response
+	Session  *sync.Map
 }
 
 // RequestCallback - a callback function passed to the Get or Post functions to be called when a url mapping is mapped.
@@ -132,6 +134,7 @@ func handleRequest(p Prairie, conn *net.TCPConn) {
 	routeObj := RouteObject{
 		Request:  request,
 		Response: p.DefaultResponse,
+		Session:  &Session,
 	}
 	responseMsg := make([]byte, 0)
 

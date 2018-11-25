@@ -43,10 +43,17 @@ func main() {
 	})
 
 	app.Get("/index", func(routeObj *prairie.RouteObject) {
-		routeObj.Response.Html = "<b>Hello from the index page</b>"
+		val, ok := routeObj.Session.Load("firstKey")
+		if ok {
+			routeObj.Response.Html = val.(string) + "<b>Hello from the index page</b>"
+		} else {
+			routeObj.Response.Html = "<b>Hello from the index page</b>"
+
+		}
 	})
 
 	app.Get("/file", func(routeObj *prairie.RouteObject) {
+		routeObj.Session.Store("firstKey", "my stored value")
 		routeObj.Response.File = "templates/test.html"
 	})
 
