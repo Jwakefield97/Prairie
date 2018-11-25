@@ -61,7 +61,6 @@ func (p Prairie) Post(url string, callback RequestCallback) {
 }
 
 // NewPrairieInstance - a funciton to create a new Prairie server instance.
-//TODO: add an optional Response object parameter where the user can set defaults for the Resonse object to be sent to the router callbacks
 func NewPrairieInstance(ip string, port int) Prairie {
 	p := Prairie{ip: ip, port: port}
 	p.getMappings = map[string]RequestCallback{} //instantiate maps
@@ -71,7 +70,6 @@ func NewPrairieInstance(ip string, port int) Prairie {
 }
 
 // Start - a function used to start the server.
-// https://golang.org/pkg/net/#example_Listener
 func (p Prairie) Start() {
 	fmt.Printf("The server is being started on %s:%d", p.ip, p.port)
 
