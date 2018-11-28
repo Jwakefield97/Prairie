@@ -17,8 +17,8 @@ import (
 	"io"
 	"log"
 	"net"
-	"prairie/lib/http"
-	"prairie/lib/utils"
+	"github.com/Jwakefield97/prairie/lib/http"
+	"github.com/Jwakefield97/prairie/lib/utils"
 	"strings"
 	"sync"
 )

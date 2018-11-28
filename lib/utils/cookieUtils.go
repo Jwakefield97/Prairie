@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"prairie/lib/http"
+	"github.com/Jwakefield97/prairie/lib/http"
 	"strings"
 )
 

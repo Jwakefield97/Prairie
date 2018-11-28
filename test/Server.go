@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"prairie"
+	"github.com/Jwakefield97/prairie"
 )
 
 // Todo - a struct to test nesting structs in a template
