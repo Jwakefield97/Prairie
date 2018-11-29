@@ -129,6 +129,8 @@ func handleRequest(p Prairie, conn *net.TCPConn) {
 	request := utils.ParseHTTPRequest(requestStr)
 	//TODO: set stay alive if the keep alive header is set
 
+	fmt.Println("\n*******************"+request.Cookies["lastName"]+"*********************\n")
+
 	routeObj := RouteObject{
 		Request:  request,
 		Response: p.DefaultResponse,

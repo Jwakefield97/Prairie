@@ -39,6 +39,7 @@ func main() {
 	})
 
 	app.Get("/plain", func(routeObj *prairie.RouteObject) {
+		routeObj.Response.SetCookie("lastName","wakefield",10000)
 		routeObj.Response.File = "templates/test.g"
 	})
 

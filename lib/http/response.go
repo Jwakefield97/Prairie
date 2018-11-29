@@ -31,7 +31,7 @@ type Response struct {
 	Html           string
 	Text           string            //plain text to be sent back
 	Headers        map[string]string //headers to include in the request
-	Cookies        map[string]string
+	Cookies        []string
 	Payload        []byte
 }
 
@@ -45,15 +45,25 @@ func NewResponse() Response {
 	r.File = ""
 	r.Text = ""
 	r.Headers = map[string]string{}
-	r.Cookies = map[string]string{}
+	r.Cookies = []string{}
 	r.Payload = make([]byte, 0)
 	return r
 }
 
-// SetCookie - add a cookie to a response struct
-// TODO: add timeout for the cookie
-func (r Response) SetCookie(key string, val string) {
-	//TODO: implment me
+// SetCookie - add a cookie to set in a response struct
+func (r *Response) SetCookie(key string, val string, seconds int) {
+	//https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie   <-- for setting a cookie
+	loc := time.FixedZone("GMT",0)
+	expireTime := time.Now().Add(time.Second*time.Duration(seconds)).In(loc).Format(time.RFC1123)
+	cookie := key + "=" + val + "; Expires=" + expireTime + "; HttpOnly; Path=/"
+	r.Cookies = append(r.Cookies, cookie)
+}
+
+// InvalidateCookie - a function used to invalidate a cookie by setting its date to a date in the past
+func (r *Response) InvalidateCookie(key string, val string) {
+	//https://stackoverflow.com/questions/5285940/correct-way-to-delete-cookies-server-side  <-- for deleting a cookie
+	cookie := key + "=" + val + "; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Path=/"
+	r.Cookies = append(r.Cookies, cookie)
 }
 
 // GetDefaultResponse - get the default response struct with preset headers
@@ -61,6 +71,11 @@ func GetDefaultResponse() Response {
 	r := NewResponse()
 	//TODO: add default headers
 	return r
+}
+
+// GetErrorMessage - returns an appropriate http error response with custom message if supplied
+func GetErrorMessage(message string, httpStatus int) {
+	//TODO: implement me
 }
 
 // FormHTTPResponse - a function to form the actual http response
@@ -117,6 +132,8 @@ func FormHTTPResponse(response *Response, templatePath string) []byte {
 			response.Headers["Content-Type"] = "image/gif"
 		case "mpeg":
 			response.Headers["Content-Type"] = "audio/mpeg"
+		case "json":
+			response.Headers["Content-Type"] = "application/json"
 		default:
 			response.Headers["Content-Type"] = "text/plain" //default to plain text if no file type matches
 		}
@@ -127,6 +144,10 @@ func FormHTTPResponse(response *Response, templatePath string) []byte {
 	message = append(message, []byte("HTTP/1.1 200 \n")...) //start with status line
 	for k, v := range response.Headers {                    //append headers
 		header := k + ": " + v + "\n"
+		message = append(message, []byte(header)...)
+	}
+	for _, cookie := range response.Cookies {                    //append headers
+		header := "Set-Cookie: "+cookie+"\n"
 		message = append(message, []byte(header)...)
 	}
 	message = append(message, []byte("\n")...) //newline between header and body
