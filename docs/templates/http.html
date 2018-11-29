@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#375EAB">
+
+  <title>http - The Go Programming Language</title>
+
+<link type="text/css" rel="stylesheet" href="/resources/css/style.css">
+
+<link rel="stylesheet" href="/resources/css/jquery.treeview.css">
+<script type="text/javascript">window.initFuncs = [];</script>
+</head>
+<body>
+
+
+
+<div id="page" class="wide">
+<div class="container">
+
+
+  <h1>
+    Package http
+    <span class="text-muted"></span>
+  </h1>
+
+
+
+
+
+
+
+<div id="nav"></div>
+
+
+<!--
+	Copyright 2009 The Go Authors. All rights reserved.
+	Use of this source code is governed by a BSD-style
+	license that can be found in the LICENSE file.
+-->
+<!--
+	Note: Static (i.e., not template-generated) href and id
+	attributes start with "pkg-" to make it impossible for
+	them to conflict with generated attributes (some of which
+	correspond to Go identifiers).
+-->
+
+	<script type='text/javascript'>
+	document.ANALYSIS_DATA = null;
+	document.CALLGRAPH = null;
+	</script>
+
+	
+		
+		<div id="short-nav">
+			<dl>
+			<dd><code>import "github.com/Jwakefield97/prairie/lib/http"</code></dd>
+			</dl>
+			<dl>
+			<dd><a href="#pkg-overview" class="overviewLink">Overview</a></dd>
+			<dd><a href="#pkg-index" class="indexLink">Index</a></dd>
+			
+			
+			</dl>
+		</div>
+		<!-- The package's Name is printed as title by the top-level template -->
+		<div id="pkg-overview" class="toggleVisible">
+			<div class="collapsed">
+				<h2 class="toggleButton" title="Click to show Overview section">Overview ▹</h2>
+			</div>
+			<div class="expanded">
+				<h2 class="toggleButton" title="Click to hide Overview section">Overview ▾</h2>
+				
+			</div>
+		</div>
+		
+
+		<div id="pkg-index" class="toggleVisible">
+		<div class="collapsed">
+			<h2 class="toggleButton" title="Click to show Index section">Index ▹</h2>
+		</div>
+		<div class="expanded">
+			<h2 class="toggleButton" title="Click to hide Index section">Index ▾</h2>
+
+		<!-- Table of contents for API; must be named manual-nav to turn off auto nav. -->
+			<div id="manual-nav">
+			<dl>
+			
+				<dd><a href="#pkg-constants">Constants</a></dd>
+			
+			
+			
+				
+				<dd><a href="#FormHTTPResponse">func FormHTTPResponse(response *Response, templatePath string) []byte</a></dd>
+			
+				
+				<dd><a href="#GetErrorMessage">func GetErrorMessage(message string, httpStatus int)</a></dd>
+			
+			
+				
+				<dd><a href="#FileStruct">type FileStruct</a></dd>
+				
+				
+			
+				
+				<dd><a href="#Request">type Request</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#NewRequest">func NewRequest() Request</a></dd>
+				
+				
+			
+				
+				<dd><a href="#Response">type Response</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#GetDefaultResponse">func GetDefaultResponse() Response</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#NewResponse">func NewResponse() Response</a></dd>
+				
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Response.InvalidateCookie">func (r *Response) InvalidateCookie(key string, val string)</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Response.SetCookie">func (r *Response) SetCookie(key string, val string, seconds int)</a></dd>
+				
+			
+			
+			</dl>
+			</div><!-- #manual-nav -->
+
+		
+
+		
+			<h3>Package files</h3>
+			<p>
+			<span style="font-size:90%">
+			
+				<a href="/src/github.com/Jwakefield97/prairie/lib/http/http.go">http.go</a>
+			
+				<a href="/src/github.com/Jwakefield97/prairie/lib/http/request.go">request.go</a>
+			
+				<a href="/src/github.com/Jwakefield97/prairie/lib/http/response.go">response.go</a>
+			
+			</span>
+			</p>
+		
+		</div><!-- .expanded -->
+		</div><!-- #pkg-index -->
+
+		<div id="pkg-callgraph" class="toggle" style="display: none">
+		<div class="collapsed">
+			<h2 class="toggleButton" title="Click to show Internal Call Graph section">Internal call graph ▹</h2>
+		</div> <!-- .expanded -->
+		<div class="expanded">
+			<h2 class="toggleButton" title="Click to hide Internal Call Graph section">Internal call graph ▾</h2>
+			<p>
+			  In the call graph viewer below, each node
+			  is a function belonging to this package
+			  and its children are the functions it
+			  calls&mdash;perhaps dynamically.
+			</p>
+			<p>
+			  The root nodes are the entry points of the
+			  package: functions that may be called from
+			  outside the package.
+			  There may be non-exported or anonymous
+			  functions among them if they are called
+			  dynamically from another package.
+			</p>
+			<p>
+			  Click a node to visit that function's source code.
+			  From there you can visit its callers by
+			  clicking its declaring <code>func</code>
+			  token.
+			</p>
+			<p>
+			  Functions may be omitted if they were
+			  determined to be unreachable in the
+			  particular programs or tests that were
+			  analyzed.
+			</p>
+			<!-- Zero means show all package entry points. -->
+			<ul style="margin-left: 0.5in" id="callgraph-0" class="treeview"></ul>
+		</div>
+		</div> <!-- #pkg-callgraph -->
+
+		
+			<h2 id="pkg-constants">Constants</h2>
+			
+				
+				<pre>const <span id="HTTP_ACCEPTED">HTTP_ACCEPTED</span> = 202</pre>
+			
+				
+				<pre>const <span id="HTTP_ALREADY_REPORTED">HTTP_ALREADY_REPORTED</span> = 208</pre>
+			
+				
+				<pre>const <span id="HTTP_BAD_GATEWAY">HTTP_BAD_GATEWAY</span> = 502</pre>
+			
+				<p>
+common 400 level statuses
+</p>
+
+				<pre>const <span id="HTTP_BAD_REQUEST">HTTP_BAD_REQUEST</span> = 400</pre>
+			
+				
+				<pre>const <span id="HTTP_CLIENT_CLOSED_REQUEST">HTTP_CLIENT_CLOSED_REQUEST</span> = 499</pre>
+			
+				
+				<pre>const <span id="HTTP_CONFLICT">HTTP_CONFLICT</span> = 409</pre>
+			
+				
+				<pre>const <span id="HTTP_CONNECTION_CLOSED_WITHOUT_RESPONSE">HTTP_CONNECTION_CLOSED_WITHOUT_RESPONSE</span> = 444</pre>
+			
+				<p>
+common 100 level statuses
+</p>
+
+				<pre>const <span id="HTTP_CONTINUE">HTTP_CONTINUE</span> = 100</pre>
+			
+				
+				<pre>const <span id="HTTP_CREATED">HTTP_CREATED</span> = 201</pre>
+			
+				
+				<pre>const <span id="HTTP_EXPECTATION_FAILED">HTTP_EXPECTATION_FAILED</span> = 417</pre>
+			
+				
+				<pre>const <span id="HTTP_FAILED_DEPENDENCY">HTTP_FAILED_DEPENDENCY</span> = 424</pre>
+			
+				
+				<pre>const <span id="HTTP_FORBIDDEN">HTTP_FORBIDDEN</span> = 403</pre>
+			
+				
+				<pre>const <span id="HTTP_FOUND">HTTP_FOUND</span> = 302</pre>
+			
+				
+				<pre>const <span id="HTTP_GATEWAY_TIMEOUT">HTTP_GATEWAY_TIMEOUT</span> = 504</pre>
+			
+				
+				<pre>const <span id="HTTP_GONE">HTTP_GONE</span> = 410</pre>
+			
+				
+				<pre>const <span id="HTTP_HTTP_VERSION_NOT_SUPPORTED">HTTP_HTTP_VERSION_NOT_SUPPORTED</span> = 505</pre>
+			
+				
+				<pre>const <span id="HTTP_IM_A_TEAPOT">HTTP_IM_A_TEAPOT</span> = 418</pre>
+			
+				
+				<pre>const <span id="HTTP_IM_USED">HTTP_IM_USED</span> = 226</pre>
+			
+				
+				<pre>const <span id="HTTP_INSUFFICIENT_STORAGE">HTTP_INSUFFICIENT_STORAGE</span> = 507</pre>
+			
+				<p>
+common 500 level statuses
+</p>
+
+				<pre>const <span id="HTTP_INTERNAL_SERVER_ERROR">HTTP_INTERNAL_SERVER_ERROR</span> = 500</pre>
+			
+				
+				<pre>const <span id="HTTP_LENGTH_REQUIRED">HTTP_LENGTH_REQUIRED</span> = 411</pre>
+			
+				
+				<pre>const <span id="HTTP_LOCKED">HTTP_LOCKED</span> = 423</pre>
+			
+				
+				<pre>const <span id="HTTP_LOOP_DETECTED">HTTP_LOOP_DETECTED</span> = 508</pre>
+			
+				
+				<pre>const <span id="HTTP_METHOD_NOT_ALLOWED">HTTP_METHOD_NOT_ALLOWED</span> = 405</pre>
+			
+				
+				<pre>const <span id="HTTP_MISDIRECTED_REQUEST">HTTP_MISDIRECTED_REQUEST</span> = 421</pre>
+			
+				
+				<pre>const <span id="HTTP_MOVED_PERMANTLY">HTTP_MOVED_PERMANTLY</span> = 301</pre>
+			
+				<p>
+common 300 level statuses
+</p>
+
+				<pre>const <span id="HTTP_MULTIPLE_CHOICES">HTTP_MULTIPLE_CHOICES</span> = 300</pre>
+			
+				
+				<pre>const <span id="HTTP_MULTI_STATUS">HTTP_MULTI_STATUS</span> = 207</pre>
+			
+				
+				<pre>const <span id="HTTP_NETOWRK_CONNECT_TIMEOUT_ERROR">HTTP_NETOWRK_CONNECT_TIMEOUT_ERROR</span> = 599</pre>
+			
+				
+				<pre>const <span id="HTTP_NETWORK_AUTHENTICATION_REQUIRED">HTTP_NETWORK_AUTHENTICATION_REQUIRED</span> = 511</pre>
+			
+				
+				<pre>const <span id="HTTP_NON_AUTHORITATIVE_INFO">HTTP_NON_AUTHORITATIVE_INFO</span> = 203</pre>
+			
+				
+				<pre>const <span id="HTTP_NOT_ACCEPTABLE">HTTP_NOT_ACCEPTABLE</span> = 406</pre>
+			
+				
+				<pre>const <span id="HTTP_NOT_EXTENDED">HTTP_NOT_EXTENDED</span> = 510</pre>
+			
+				
+				<pre>const <span id="HTTP_NOT_FOUND">HTTP_NOT_FOUND</span> = 404</pre>
+			
+				
+				<pre>const <span id="HTTP_NOT_IMPLEMENTED">HTTP_NOT_IMPLEMENTED</span> = 501</pre>
+			
+				
+				<pre>const <span id="HTTP_NOT_MODIFIED">HTTP_NOT_MODIFIED</span> = 304</pre>
+			
+				
+				<pre>const <span id="HTTP_NO_CONTENT">HTTP_NO_CONTENT</span> = 204</pre>
+			
+				<p>
+common 200 level statuses
+</p>
+
+				<pre>const <span id="HTTP_OK">HTTP_OK</span> = 200</pre>
+			
+				
+				<pre>const <span id="HTTP_PARTIAL_CONTENT">HTTP_PARTIAL_CONTENT</span> = 206</pre>
+			
+				
+				<pre>const <span id="HTTP_PAYLOAD_TOO_LARGE">HTTP_PAYLOAD_TOO_LARGE</span> = 413</pre>
+			
+				
+				<pre>const <span id="HTTP_PAYMENT_REQUIRED">HTTP_PAYMENT_REQUIRED</span> = 402</pre>
+			
+				
+				<pre>const <span id="HTTP_PERMANENT_REDIRECT">HTTP_PERMANENT_REDIRECT</span> = 308</pre>
+			
+				
+				<pre>const <span id="HTTP_PRECONDITION_FAILED">HTTP_PRECONDITION_FAILED</span> = 412</pre>
+			
+				
+				<pre>const <span id="HTTP_PRECONDITION_REQUIRED">HTTP_PRECONDITION_REQUIRED</span> = 428</pre>
+			
+				
+				<pre>const <span id="HTTP_PROCESSING">HTTP_PROCESSING</span> = 102</pre>
+			
+				
+				<pre>const <span id="HTTP_PROXY_AUTHENTICATION_REQUIRED">HTTP_PROXY_AUTHENTICATION_REQUIRED</span> = 407</pre>
+			
+				
+				<pre>const <span id="HTTP_REQUESTED_RANGE_NOT_SATISFIABLE">HTTP_REQUESTED_RANGE_NOT_SATISFIABLE</span> = 416</pre>
+			
+				
+				<pre>const <span id="HTTP_REQUEST_HEADER_FIELD_TOO_LARGE">HTTP_REQUEST_HEADER_FIELD_TOO_LARGE</span> = 431</pre>
+			
+				
+				<pre>const <span id="HTTP_REQUEST_TIMEOUT">HTTP_REQUEST_TIMEOUT</span> = 408</pre>
+			
+				
+				<pre>const <span id="HTTP_REQUEST_URI_TOO_LONG">HTTP_REQUEST_URI_TOO_LONG</span> = 414</pre>
+			
+				
+				<pre>const <span id="HTTP_RESET_CONTENT">HTTP_RESET_CONTENT</span> = 205</pre>
+			
+				
+				<pre>const <span id="HTTP_SEE_OTHER">HTTP_SEE_OTHER</span> = 303</pre>
+			
+				
+				<pre>const <span id="HTTP_SERVICE_UNAVAILABLE">HTTP_SERVICE_UNAVAILABLE</span> = 503</pre>
+			
+				
+				<pre>const <span id="HTTP_SWITCHING_PROTOCOLS">HTTP_SWITCHING_PROTOCOLS</span> = 101</pre>
+			
+				
+				<pre>const <span id="HTTP_TEMPORARY_REDIRECT">HTTP_TEMPORARY_REDIRECT</span> = 307</pre>
+			
+				
+				<pre>const <span id="HTTP_TOO_MANY_REQUESTS">HTTP_TOO_MANY_REQUESTS</span> = 429</pre>
+			
+				
+				<pre>const <span id="HTTP_UNAUTHORIZED">HTTP_UNAUTHORIZED</span> = 401</pre>
+			
+				
+				<pre>const <span id="HTTP_UNAVAILABLE_FOR_LEGAL_REASONS">HTTP_UNAVAILABLE_FOR_LEGAL_REASONS</span> = 451</pre>
+			
+				
+				<pre>const <span id="HTTP_UNPROCESSABLE_ENTITY">HTTP_UNPROCESSABLE_ENTITY</span> = 422</pre>
+			
+				
+				<pre>const <span id="HTTP_UNSUPPORTED_MEDIA_TYPE">HTTP_UNSUPPORTED_MEDIA_TYPE</span> = 415</pre>
+			
+				
+				<pre>const <span id="HTTP_UPGRADE_REQUIRED">HTTP_UPGRADE_REQUIRED</span> = 426</pre>
+			
+				
+				<pre>const <span id="HTTP_USE_PROXY">HTTP_USE_PROXY</span> = 305</pre>
+			
+				
+				<pre>const <span id="HTTP_VARIANT_ALSO_NEGOTIATES">HTTP_VARIANT_ALSO_NEGOTIATES</span> = 506</pre>
+			
+		
+		
+		
+			
+			
+			<h2 id="FormHTTPResponse">func <a href="/src/github.com/Jwakefield97/prairie/lib/http/response.go?s=2788:2857#L72">FormHTTPResponse</a>
+				<a class="permalink" href="#FormHTTPResponse">&#xb6;</a>
+			</h2>
+			<pre>func FormHTTPResponse(response *<a href="#Response">Response</a>, templatePath <a href="/pkg/builtin/#string">string</a>) []<a href="/pkg/builtin/#byte">byte</a></pre>
+			<p>
+FormHTTPResponse - a function to form the actual http response
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="GetErrorMessage">func <a href="/src/github.com/Jwakefield97/prairie/lib/http/response.go?s=2637:2689#L67">GetErrorMessage</a>
+				<a class="permalink" href="#GetErrorMessage">&#xb6;</a>
+			</h2>
+			<pre>func GetErrorMessage(message <a href="/pkg/builtin/#string">string</a>, httpStatus <a href="/pkg/builtin/#int">int</a>)</pre>
+			<p>
+GetErrorMessage - returns an appropriate http error response with custom message if supplied
+</p>
+
+			
+			
+
+		
+		
+			
+			
+			<h2 id="FileStruct">type <a href="/src/github.com/Jwakefield97/prairie/lib/http/response.go?s=5875:5937#L149">FileStruct</a>
+				<a class="permalink" href="#FileStruct">&#xb6;</a>
+			</h2>
+			<p>
+FileStruct - a struct to hold the file data and information about the file
+</p>
+
+			<pre>type FileStruct struct {
+<span id="FileStruct.Info"></span>    Info  <a href="/pkg/os/">os</a>.<a href="/pkg/os/#FileInfo">FileInfo</a>
+<span id="FileStruct.Bytes"></span>    Bytes []<a href="/pkg/builtin/#byte">byte</a>
+}</pre>
+
+			
+
+			
+
+			
+			
+			
+
+			
+
+			
+		
+			
+			
+			<h2 id="Request">type <a href="/src/github.com/Jwakefield97/prairie/lib/http/request.go?s=262:851#L1">Request</a>
+				<a class="permalink" href="#Request">&#xb6;</a>
+			</h2>
+			<p>
+Request - a struct used to model/modify requests
+</p>
+
+			<pre>type Request struct {
+<span id="Request.Type"></span>    Type       <a href="/pkg/builtin/#string">string</a>            <span class="comment">//Request type (GET,POST,PUT,DELETE). Probably need to make this a struct of constants</span>
+<span id="Request.FullPath"></span>    FullPath   <a href="/pkg/builtin/#string">string</a>            <span class="comment">//full path including paramters</span>
+<span id="Request.Path"></span>    Path       <a href="/pkg/builtin/#string">string</a>            <span class="comment">//just the path</span>
+<span id="Request.Version"></span>    Version    <a href="/pkg/builtin/#string">string</a>            <span class="comment">//http version of the request. Most commonly HTTP/1.1</span>
+<span id="Request.Headers"></span>    Headers    map[<a href="/pkg/builtin/#string">string</a>]<a href="/pkg/builtin/#string">string</a> <span class="comment">//headers contained in the request</span>
+<span id="Request.Parameters"></span>    Parameters map[<a href="/pkg/builtin/#string">string</a>]<a href="/pkg/builtin/#string">string</a> <span class="comment">//parameters from the path</span>
+<span id="Request.Cookies"></span>    Cookies    map[<a href="/pkg/builtin/#string">string</a>]<a href="/pkg/builtin/#string">string</a> <span class="comment">//a map of cookies from the http request</span>
+<span id="Request.Body"></span>    Body       map[<a href="/pkg/builtin/#string">string</a>]<a href="/pkg/builtin/#string">string</a> <span class="comment">//body of a post request</span>
+}</pre>
+
+			
+
+			
+
+			
+			
+			
+
+			
+				
+				<h3 id="NewRequest">func <a href="/src/github.com/Jwakefield97/prairie/lib/http/request.go?s=908:933#L11">NewRequest</a>
+					<a class="permalink" href="#NewRequest">&#xb6;</a>
+				</h3>
+				<pre>func NewRequest() <a href="#Request">Request</a></pre>
+				<p>
+NewRequest - return an initialized Reqest struct
+</p>
+
+				
+				
+			
+
+			
+		
+			
+			
+			<h2 id="Response">type <a href="/src/github.com/Jwakefield97/prairie/lib/http/response.go?s=543:1145#L15">Response</a>
+				<a class="permalink" href="#Response">&#xb6;</a>
+			</h2>
+			<p>
+Response - a struct to model/modify responses.
+</p>
+
+			<pre>type Response struct {
+<span id="Response.Status"></span>    Status         <a href="/pkg/builtin/#int">int</a>
+<span id="Response.Template"></span>    Template       <a href="/pkg/builtin/#string">string</a>      <span class="comment">//name of the template to return</span>
+<span id="Response.TemplateParams"></span>    TemplateParams interface{} <span class="comment">//array of parameters to pass to the template</span>
+<span id="Response.JSON"></span>    JSON           []<a href="/pkg/builtin/#byte">byte</a>      <span class="comment">//json to return. I&#39;m pretty sure that golang is marshalled into byte arrays. this might need to be updated later</span>
+<span id="Response.File"></span>    File           <a href="/pkg/builtin/#string">string</a>      <span class="comment">//location of the file to be returned</span>
+<span id="Response.Html"></span>    Html           <a href="/pkg/builtin/#string">string</a>
+<span id="Response.Text"></span>    Text           <a href="/pkg/builtin/#string">string</a>            <span class="comment">//plain text to be sent back</span>
+<span id="Response.Headers"></span>    Headers        map[<a href="/pkg/builtin/#string">string</a>]<a href="/pkg/builtin/#string">string</a> <span class="comment">//headers to include in the request</span>
+<span id="Response.Cookies"></span>    Cookies        []<a href="/pkg/builtin/#string">string</a>
+<span id="Response.Payload"></span>    Payload        []<a href="/pkg/builtin/#byte">byte</a>
+}</pre>
+
+			
+
+			
+
+			
+			
+			
+
+			
+				
+				<h3 id="GetDefaultResponse">func <a href="/src/github.com/Jwakefield97/prairie/lib/http/response.go?s=2435:2469#L60">GetDefaultResponse</a>
+					<a class="permalink" href="#GetDefaultResponse">&#xb6;</a>
+				</h3>
+				<pre>func GetDefaultResponse() <a href="#Response">Response</a></pre>
+				<p>
+GetDefaultResponse - get the default response struct with preset headers
+</p>
+
+				
+				
+			
+				
+				<h3 id="NewResponse">func <a href="/src/github.com/Jwakefield97/prairie/lib/http/response.go?s=1198:1225#L29">NewResponse</a>
+					<a class="permalink" href="#NewResponse">&#xb6;</a>
+				</h3>
+				<pre>func NewResponse() <a href="#Response">Response</a></pre>
+				<p>
+NewResponse - constructor for Reponse struct
+</p>
+
+				
+				
+			
+
+			
+				
+				<h3 id="Response.InvalidateCookie">func (*Response) <a href="/src/github.com/Jwakefield97/prairie/lib/http/response.go?s=2043:2102#L53">InvalidateCookie</a>
+					<a class="permalink" href="#Response.InvalidateCookie">&#xb6;</a>
+				</h3>
+				<pre>func (r *<a href="#Response">Response</a>) InvalidateCookie(key <a href="/pkg/builtin/#string">string</a>, val <a href="/pkg/builtin/#string">string</a>)</pre>
+				<p>
+InvalidateCookie - a function used to invalidate a cookie by setting its date to a date in the past
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Response.SetCookie">func (*Response) <a href="/src/github.com/Jwakefield97/prairie/lib/http/response.go?s=1517:1582#L44">SetCookie</a>
+					<a class="permalink" href="#Response.SetCookie">&#xb6;</a>
+				</h3>
+				<pre>func (r *<a href="#Response">Response</a>) SetCookie(key <a href="/pkg/builtin/#string">string</a>, val <a href="/pkg/builtin/#string">string</a>, seconds <a href="/pkg/builtin/#int">int</a>)</pre>
+				<p>
+SetCookie - add a cookie to set in a response struct
+</p>
+
+				
+				
+				
+			
+		
+	
+
+	
+
+
+
+
+
+
+
+<div id="footer">
+Build version go1.10.3.<br>
+Except as <a href="https://developers.google.com/site-policies#restrictions">noted</a>,
+the content of this page is licensed under the
+Creative Commons Attribution 3.0 License,
+and code is licensed under a <a href="/LICENSE">BSD license</a>.<br>
+<a href="/doc/tos.html">Terms of Service</a> |
+<a href="http://www.google.com/intl/en/policies/privacy/">Privacy Policy</a>
+</div>
+
+</div><!-- .container -->
+</div><!-- #page -->
+
+<!-- TODO(adonovan): load these from <head> using "defer" attribute? -->
+<script type="text/javascript" src="/resources/js/jquery.js"></script>
+<script type="text/javascript" src="/resources/js/jquery.treeview.js"></script>
+<script type="text/javascript" src="/resources/js/jquery.treeview.edit.js"></script>
+
+
+<script>var goVersion = "go1.10.3";</script>
+<script type="text/javascript" src=/resources/js/godocs.js"></script>
+
+</body>
+</html>
+
