@@ -136,6 +136,8 @@ func FormHTTPResponse(response *Response, templatePath string) []byte {
 				response.Headers["Content-Type"] = "audio/mpeg"
 			case "json":
 				response.Headers["Content-Type"] = "application/json"
+			case "ico":
+				response.Headers["Content-Type"] = "image/x-icon"
 			default:
 				response.Headers["Content-Type"] = "text/plain" //default to plain text if no file type matches
 			}
