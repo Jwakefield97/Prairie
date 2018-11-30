@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/Jwakefield97/prairie"
+	"github.com/Jwakefield97/prairie/lib/http"
 )
 
 // Todo - a struct to test nesting structs in a template
@@ -59,8 +60,16 @@ func main() {
 	})
 
 	app.Post("/upload", func(routeObj *prairie.RouteObject) {
-		fmt.Println(routeObj.Request.Body)
-		routeObj.Response.Text = "Your name is: " + routeObj.Request.Body["name"]
+		routeObj.Response.Text = "Your name is: " + routeObj.Request.Body["name"].(string)
+	})
+
+	app.Post("/imageUpload", func(routeObj *prairie.RouteObject) {
+		routeObj.Response.Text = "upload unsuccessful"
+
+		if routeObj.Request.Body["file"] != nil {
+			routeObj.Request.Body["file"].(http.UploadFile).Save("resources/uploads/")
+			routeObj.Response.Text = "upload successful"
+		}
 	})
 
 	app.Start()
