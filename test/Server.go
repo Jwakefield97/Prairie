@@ -58,8 +58,9 @@ func main() {
 		routeObj.Response.File = "templates/test.html"
 	})
 
-	app.Post("/uploads", func(routeObj *prairie.RouteObject) {
-		routeObj.Response.Text = "This is plain text"
+	app.Post("/upload", func(routeObj *prairie.RouteObject) {
+		fmt.Println(routeObj.Request.Body)
+		routeObj.Response.Text = "Your name is: " + routeObj.Request.Body["name"]
 	})
 
 	app.Start()

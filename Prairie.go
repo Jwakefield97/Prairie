@@ -126,7 +126,7 @@ func handleRequest(p Prairie, conn *net.TCPConn) {
 		}
 		requestStr = string(append(buf, newBuf...)) //append the new buffer to the existing buffer
 	}
-
+	//fmt.Println(requestStr)
 	request := utils.ParseHTTPRequest(requestStr)
 	//TODO: set stay alive if the keep alive header is set
 

@@ -4,6 +4,7 @@ import (
 	"github.com/Jwakefield97/prairie/lib/http"
 	"strconv"
 	"strings"
+	"fmt"
 )
 
 // parseQueryParamters - used to parse parameters from the path
@@ -56,9 +57,8 @@ func ParseHTTPRequest(requestStr string) http.Request {
 				parseQueryParamters(&request) //parse the parameters out of the path
 			}
 		} else {
-			if row == "" {
-				isBody = true //body parsing has begun
-			} else if isBody { //parse body params
+			if isBody {
+				fmt.Println("In body")
 				params := strings.Split(row, "&")
 				for _, param := range params {
 					paramKeyVal := strings.Split(param, "=")
@@ -66,12 +66,17 @@ func ParseHTTPRequest(requestStr string) http.Request {
 						request.Body[strings.TrimSpace(paramKeyVal[0])] = paramKeyVal[1]
 					}
 				}
-			} else {
-				//TODO: parse rest of post request here
-				header := strings.SplitN(row, ":", 2) //split on only the first occurence of :
-				//TODO: make this more robust
-				if len(header) == 2 {
-					request.Headers[strings.TrimSpace(header[0])] = header[1]
+			}else{
+				if strings.TrimSpace(row) == "" {
+					fmt.Println("going to body")
+					isBody = true //body parsing has begun
+				} else {
+					//TODO: parse rest of post request here
+					header := strings.SplitN(row, ":", 2) //split on only the first occurence of :
+					//TODO: make this more robust
+					if len(header) == 2 {
+						request.Headers[strings.TrimSpace(header[0])] = header[1]
+					}
 				}
 			}
 		}
