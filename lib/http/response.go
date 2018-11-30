@@ -53,8 +53,8 @@ func NewResponse() Response {
 // SetCookie - add a cookie to set in a response struct
 func (r *Response) SetCookie(key string, val string, seconds int) {
 	//https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie   <-- for setting a cookie
-	loc := time.FixedZone("GMT",0)
-	expireTime := time.Now().Add(time.Second*time.Duration(seconds)).In(loc).Format(time.RFC1123)
+	loc := time.FixedZone("GMT", 0)
+	expireTime := time.Now().Add(time.Second * time.Duration(seconds)).In(loc).Format(time.RFC1123)
 	cookie := key + "=" + val + "; Expires=" + expireTime + "; HttpOnly; Path=/"
 	r.Cookies = append(r.Cookies, cookie)
 }
@@ -114,28 +114,31 @@ func FormHTTPResponse(response *Response, templatePath string) []byte {
 	} else if strings.TrimSpace(response.File) != "" {
 		file := getFile(response.File)
 		response.Payload = file.Bytes
-		response.Headers["Last-Modified"] = file.Info.ModTime().Format(time.RFC1123)
-		//TODO: check to make sure files have a "."
-		fileType := strings.Split(file.Info.Name(), ".")[1]
-		switch fileType {
-		case "html":
-			response.Headers["Content-Type"] = "text/html"
-		case "css":
-			response.Headers["Content-Type"] = "text/css"
-		case "js":
-			response.Headers["Content-Type"] = "application/javascript"
-		case "png":
-			response.Headers["Content-Type"] = "image/png"
-		case "jpeg":
-			response.Headers["Content-Type"] = "image/jpeg"
-		case "gif":
-			response.Headers["Content-Type"] = "image/gif"
-		case "mpeg":
-			response.Headers["Content-Type"] = "audio/mpeg"
-		case "json":
-			response.Headers["Content-Type"] = "application/json"
-		default:
-			response.Headers["Content-Type"] = "text/plain" //default to plain text if no file type matches
+		if file.Info != nil {
+			response.Headers["Last-Modified"] = file.Info.ModTime().Format(time.RFC1123)
+			fileTypesArr := strings.Split(file.Info.Name(), ".")
+			//TODO: check to make sure files have a "."
+			fileType := fileTypesArr[len(fileTypesArr)-1]
+			switch fileType {
+			case "html":
+				response.Headers["Content-Type"] = "text/html"
+			case "css":
+				response.Headers["Content-Type"] = "text/css"
+			case "js":
+				response.Headers["Content-Type"] = "application/javascript"
+			case "png":
+				response.Headers["Content-Type"] = "image/png"
+			case "jpeg":
+				response.Headers["Content-Type"] = "image/jpeg"
+			case "gif":
+				response.Headers["Content-Type"] = "image/gif"
+			case "mpeg":
+				response.Headers["Content-Type"] = "audio/mpeg"
+			case "json":
+				response.Headers["Content-Type"] = "application/json"
+			default:
+				response.Headers["Content-Type"] = "text/plain" //default to plain text if no file type matches
+			}
 		}
 
 	}
@@ -146,8 +149,8 @@ func FormHTTPResponse(response *Response, templatePath string) []byte {
 		header := k + ": " + v + "\n"
 		message = append(message, []byte(header)...)
 	}
-	for _, cookie := range response.Cookies {                    //append headers
-		header := "Set-Cookie: "+cookie+"\n"
+	for _, cookie := range response.Cookies { //append headers
+		header := "Set-Cookie: " + cookie + "\n"
 		message = append(message, []byte(header)...)
 	}
 	message = append(message, []byte("\n")...) //newline between header and body

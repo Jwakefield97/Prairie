@@ -17,10 +17,11 @@ import (
 	"io"
 	"log"
 	"net"
-	"github.com/Jwakefield97/prairie/lib/http"
-	"github.com/Jwakefield97/prairie/lib/utils"
 	"strings"
 	"sync"
+
+	"github.com/Jwakefield97/prairie/lib/http"
+	"github.com/Jwakefield97/prairie/lib/utils"
 )
 
 // BufferSize - the size of the buffer to receive from the socket
@@ -129,7 +130,7 @@ func handleRequest(p Prairie, conn *net.TCPConn) {
 	request := utils.ParseHTTPRequest(requestStr)
 	//TODO: set stay alive if the keep alive header is set
 
-	fmt.Println("\n*******************"+request.Cookies["lastName"]+"*********************\n")
+	//fmt.Println("\n*******************" + request.Cookies["lastName"] + "*********************\n")
 
 	routeObj := RouteObject{
 		Request:  request,
@@ -146,6 +147,7 @@ func handleRequest(p Prairie, conn *net.TCPConn) {
 		} else {
 			//try to find static resource if not matched by route
 			if strings.HasPrefix(request.Path[1:], p.ResourceDir) { //if a public resource was requested
+				fmt.Println(request.Path)
 				routeObj.Response.File = request.Path[1:]
 				responseMsg = http.FormHTTPResponse(&routeObj.Response, p.TemplateDir)
 			}
@@ -159,8 +161,9 @@ func handleRequest(p Prairie, conn *net.TCPConn) {
 
 	//fmt.Println(time.Now().Format(time.RFC1123))
 	if len(responseMsg) > 0 { //if less than 0 it is an invalid request
-		fmt.Println(string(responseMsg))
+		//fmt.Println(string(responseMsg))
 		conn.Write(responseMsg)
 	}
+	responseMsg = nil
 
 }
