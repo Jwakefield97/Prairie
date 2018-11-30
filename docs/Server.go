@@ -11,7 +11,7 @@ import (
 */
 func main() {
 	fmt.Println("This is the a driver to test the framework.")
-	app := prairie.NewPrairieInstance("localhost", 2000)
+	app := prairie.NewPrairieInstance("localhost", 80)
 	app.ResourceDir = "resources"
 	app.TemplateDir = "templates"
 
