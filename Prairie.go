@@ -4,8 +4,6 @@ package prairie
 	This is the entry point to the framework. All helper functions/libraries are placed in the folder ./lib.
 	MAKE SURE THIS PROJECT IS LOCATED IN YOUR SRC FOLDER OF GO PATH UNDER THE FOLDER "prairie"
 
-	TODO: add function to set cookies
-
 	TODO: add authentication filter to routes. Use a function chaining pattern (like https://www.calhoun.io/using-functional-options-instead-of-method-chaining-in-go/).
 	With the chaining style it would look like app.Get("/admin",callBack).isAuthenticated(). Authenticate based on session vars that the user sets.
 

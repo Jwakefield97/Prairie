@@ -52,7 +52,6 @@ func NewResponse() Response {
 
 // SetCookie - add a cookie to set in a response struct
 func (r *Response) SetCookie(key string, val string, seconds int) {
-	//https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie   <-- for setting a cookie
 	loc := time.FixedZone("GMT", 0)
 	expireTime := time.Now().Add(time.Second * time.Duration(seconds)).In(loc).Format(time.RFC1123)
 	cookie := key + "=" + val + "; Expires=" + expireTime + "; HttpOnly; Path=/"
@@ -61,7 +60,6 @@ func (r *Response) SetCookie(key string, val string, seconds int) {
 
 // InvalidateCookie - a function used to invalidate a cookie by setting its date to a date in the past
 func (r *Response) InvalidateCookie(key string, val string) {
-	//https://stackoverflow.com/questions/5285940/correct-way-to-delete-cookies-server-side  <-- for deleting a cookie
 	cookie := key + "=" + val + "; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Path=/"
 	r.Cookies = append(r.Cookies, cookie)
 }

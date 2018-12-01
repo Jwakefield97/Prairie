@@ -5,7 +5,6 @@ import (
 	"path/filepath"
 )
 
-
 /*
 	This file will contain structs and methods to model/modify an incoming request. This request struct
 	will be passed to the corresponding callback function when a route is matched.
@@ -20,10 +19,7 @@ type Request struct {
 	Headers    map[string]string //headers contained in the request
 	Parameters map[string]string //parameters from the path
 	Cookies    map[string]string //a map of cookies from the http request
-	Body       map[string]interface{} //body of a post request
-	IsMultiPart bool
-	BoundaryKey   string
-	BoundaryValue   string
+	Body       map[string]string //body of a post request
 }
 
 // NewRequest - return an initialized Reqest struct
@@ -36,10 +32,7 @@ func NewRequest() Request {
 	r.Headers = map[string]string{}
 	r.Parameters = map[string]string{}
 	r.Cookies = map[string]string{}
-	r.Body = make(map[string]interface{})
-	r.IsMultiPart = false
-	r.BoundaryKey = ""
-	r.BoundaryValue = ""
+	r.Body = map[string]string{}
 	return r
 }
 
@@ -52,9 +45,9 @@ type UploadFile struct {
 
 // Save - save a given file from a file upload
 func (f UploadFile) Save(location string) {
-	absPath, _ := filepath.Abs(location+f.FileName)
-    err := ioutil.WriteFile(absPath, f.Contents, 0644)
-    if err != nil {
-        panic(err) //TODO: change this so the server doesnt crash
-    }
+	absPath, _ := filepath.Abs(location + f.FileName)
+	err := ioutil.WriteFile(absPath, f.Contents, 0644)
+	if err != nil {
+		panic(err) //TODO: change this so the server doesnt crash
+	}
 }
