@@ -65,5 +65,17 @@ func main() {
 		app.Log.Debug("Uploaded name field: " + routeObj.Request.Body["name"])
 	})
 
+	app.Get("/logs/error", func(routeObj *prairie.RouteObject) {
+		routeObj.Response.File = "logs/error.txt"
+	})
+
+	app.Get("/logs/debug", func(routeObj *prairie.RouteObject) {
+		routeObj.Response.File = "logs/debug.txt"
+	})
+
+	app.Get("/logs/access", func(routeObj *prairie.RouteObject) {
+		routeObj.Response.File = "logs/access.txt"
+	})
+
 	app.Start()
 }

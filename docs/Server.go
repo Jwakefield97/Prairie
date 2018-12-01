@@ -14,6 +14,7 @@ func main() {
 	app := prairie.NewPrairieInstance("localhost", 80)
 	app.ResourceDir = "resources"
 	app.TemplateDir = "templates"
+	app.SetLogPath("logs")
 
 	app.Get("/", func(routeObj *prairie.RouteObject) {
 		routeObj.Response.File = "templates/prairie.html"
@@ -29,6 +30,18 @@ func main() {
 	})
 	app.Get("/favicon.ico", func(routeObj *prairie.RouteObject) {
 		routeObj.Response.File = "resources/images/favicon.ico"
+	})
+
+	app.Get("/logs/error", func(routeObj *prairie.RouteObject) {
+		routeObj.Response.File = "logs/error.txt"
+	})
+
+	app.Get("/logs/debug", func(routeObj *prairie.RouteObject) {
+		routeObj.Response.File = "logs/debug.txt"
+	})
+
+	app.Get("/logs/access", func(routeObj *prairie.RouteObject) {
+		routeObj.Response.File = "logs/access.txt"
 	})
 
 	app.Start()
