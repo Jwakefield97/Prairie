@@ -26,6 +26,7 @@ func main() {
 	app := prairie.NewPrairieInstance("localhost", 2000)
 	app.ResourceDir = "resources"
 	app.TemplateDir = "templates"
+	app.SetLogPath("logs")
 
 	app.Get("/temp", func(routeObj *prairie.RouteObject) {
 		routeObj.Response.Template = "temp"
@@ -61,6 +62,7 @@ func main() {
 
 	app.Post("/upload", func(routeObj *prairie.RouteObject) {
 		routeObj.Response.Text = "Your name is: " + routeObj.Request.Body["name"]
+		app.Log.Debug("Uploaded name field: " + routeObj.Request.Body["name"])
 	})
 
 	app.Start()

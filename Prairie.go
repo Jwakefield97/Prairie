@@ -15,6 +15,7 @@ import (
 	"io"
 	"log"
 	"net"
+	"path/filepath"
 	"strings"
 	"sync"
 
@@ -47,6 +48,23 @@ type Prairie struct {
 	getMappings     map[string]RequestCallback //all get and post request mappings
 	postMappings    map[string]RequestCallback //all get and post request mappings
 	DefaultResponse http.Response
+	Log             utils.Log //logger for the prairie instance
+}
+
+// NewPrairieInstance - a funciton to create a new Prairie server instance.
+func NewPrairieInstance(ip string, port int) Prairie {
+	p := Prairie{ip: ip, port: port}
+	p.getMappings = map[string]RequestCallback{} //instantiate maps
+	p.postMappings = map[string]RequestCallback{}
+	p.DefaultResponse = http.GetDefaultResponse()
+	p.Log = utils.NewLog("logs")
+	return p
+}
+
+// SetLogPath - set the location of the log files
+func (p *Prairie) SetLogPath(path string) {
+	absPath, _ := filepath.Abs(path)
+	p.Log.Path = absPath
 }
 
 // Get - a function for adding a get request mapping to the server.
@@ -59,18 +77,11 @@ func (p Prairie) Post(url string, callback RequestCallback) {
 	p.postMappings[url] = callback
 }
 
-// NewPrairieInstance - a funciton to create a new Prairie server instance.
-func NewPrairieInstance(ip string, port int) Prairie {
-	p := Prairie{ip: ip, port: port}
-	p.getMappings = map[string]RequestCallback{} //instantiate maps
-	p.postMappings = map[string]RequestCallback{}
-	p.DefaultResponse = http.GetDefaultResponse()
-	return p
-}
-
 // Start - a function used to start the server.
 func (p Prairie) Start() {
 	fmt.Printf("The server is being started on %s:%d", p.ip, p.port)
+
+	utils.CreateLogFiles(&p.Log)
 
 	// Listen on TCP port 2000 on all available unicast and
 	// anycast IP addresses of the local system.
@@ -142,19 +153,27 @@ func handleRequest(p Prairie, conn *net.TCPConn) {
 		if callback, ok := p.getMappings[request.Path]; ok { //if mapping was found
 			callback(&routeObj)
 			responseMsg = http.FormHTTPResponse(&routeObj.Response, p.TemplateDir)
+			p.Log.Access("Found (GET) - " + request.Path) // log the found path
 		} else {
 			//try to find static resource if not matched by route
 			if strings.HasPrefix(request.Path[1:], p.ResourceDir) { //if a public resource was requested
 				fmt.Println(request.Path)
 				routeObj.Response.File = request.Path[1:]
 				responseMsg = http.FormHTTPResponse(&routeObj.Response, p.TemplateDir)
+				p.Log.Access("Found (GET) - " + request.Path) // log the found path
 			}
+			p.Log.Access("Not Found (GET) - " + request.Path) // log path not found
 		}
 	} else if strings.EqualFold(request.Type, "post") {
 		if callback, ok := p.postMappings[request.Path]; ok {
 			callback(&routeObj)
 			responseMsg = http.FormHTTPResponse(&routeObj.Response, p.TemplateDir)
+			p.Log.Access("Found (POST) - " + request.Path) // log path found
 		}
+		p.Log.Access("Not Found (POST) - " + request.Path) // log path not found
+
+	} else {
+		p.Log.Access("Unknown Request Type (" + request.Type + ") - " + request.Path) // unknown request type
 	}
 
 	//fmt.Println(time.Now().Format(time.RFC1123))
