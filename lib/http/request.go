@@ -1,10 +1,5 @@
 package http
 
-import (
-	"io/ioutil"
-	"path/filepath"
-)
-
 /*
 	This file will contain structs and methods to model/modify an incoming request. This request struct
 	will be passed to the corresponding callback function when a route is matched.
@@ -41,13 +36,4 @@ type UploadFile struct {
 	Contents []byte
 	FileType string
 	FileName string
-}
-
-// Save - save a given file from a file upload
-func (f UploadFile) Save(location string) {
-	absPath, _ := filepath.Abs(location + f.FileName)
-	err := ioutil.WriteFile(absPath, f.Contents, 0644)
-	if err != nil {
-		panic(err) //TODO: change this so the server doesnt crash
-	}
 }

@@ -2,6 +2,7 @@ package http
 
 import (
 	"bytes"
+	"compress/gzip"
 	"fmt"
 	"html/template"
 	"io/ioutil"
@@ -77,7 +78,7 @@ func GetErrorMessage(message string, httpStatus int) {
 }
 
 // FormHTTPResponse - a function to form the actual http response
-func FormHTTPResponse(response *Response, templatePath string) []byte {
+func FormHTTPResponse(response *Response, templatePath string, canGzip bool) []byte {
 	message := make([]byte, 0)
 	response.Headers["Date"] = time.Now().Format(time.RFC1123)
 	response.Headers["Connection"] = "close"
@@ -142,6 +143,10 @@ func FormHTTPResponse(response *Response, templatePath string) []byte {
 		}
 
 	}
+	if canGzip {
+		response.Headers["Content-Encoding"] = "gzip"
+		GzipResponseBody(response)
+	}
 	response.Headers["Content-Length"] = strconv.Itoa(len(response.Payload))
 
 	message = append(message, []byte("HTTP/1.1 200 \n")...) //start with status line
@@ -156,6 +161,17 @@ func FormHTTPResponse(response *Response, templatePath string) []byte {
 	message = append(message, []byte("\n")...) //newline between header and body
 	message = append(message, response.Payload...)
 	return message
+}
+
+// GzipResponseBody - gzip the reponse body of the request
+func GzipResponseBody(response *Response) {
+	var buffer bytes.Buffer
+	writer := gzip.NewWriter(&buffer)
+	defer writer.Close()
+
+	writer.Write(response.Payload)
+	response.Payload = buffer.Bytes()
+
 }
 
 // FileStruct - a struct to hold the file data and information about the file
