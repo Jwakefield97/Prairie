@@ -14,8 +14,6 @@
 </head>
 <body>
 
-
-
 <div id="page" class="wide">
 <div class="container">
 
@@ -92,10 +90,13 @@
 			
 			
 				
-				<dd><a href="#FormHTTPResponse">func FormHTTPResponse(response *Response, templatePath string) []byte</a></dd>
+				<dd><a href="#FormHTTPResponse">func FormHTTPResponse(response *Response, templatePath string, canGzip bool, isKeepAlive bool, keepAlivePeriod int) ([]byte, error)</a></dd>
 			
 				
-				<dd><a href="#GetErrorMessage">func GetErrorMessage(message string, httpStatus int)</a></dd>
+				<dd><a href="#GzipResponseBody">func GzipResponseBody(response *Response)</a></dd>
+			
+				
+				<dd><a href="#ResponseToBytes">func ResponseToBytes(response *Response) []byte</a></dd>
 			
 			
 				
@@ -118,6 +119,9 @@
 					<dd>&nbsp; &nbsp; <a href="#GetDefaultResponse">func GetDefaultResponse() Response</a></dd>
 				
 					
+					<dd>&nbsp; &nbsp; <a href="#GetErrorMessage">func GetErrorMessage(message string, httpStatus int) *Response</a></dd>
+				
+					
 					<dd>&nbsp; &nbsp; <a href="#NewResponse">func NewResponse() Response</a></dd>
 				
 				
@@ -126,6 +130,11 @@
 				
 					
 					<dd>&nbsp; &nbsp; <a href="#Response.SetCookie">func (r *Response) SetCookie(key string, val string, seconds int)</a></dd>
+				
+			
+				
+				<dd><a href="#UploadFile">type UploadFile</a></dd>
+				
 				
 			
 			
@@ -139,11 +148,11 @@
 			<p>
 			<span style="font-size:90%">
 			
-				<a href="/src/github.com/Jwakefield97/prairie/lib/http/http.go">http.go</a>
+				<a href="#">http.go</a>
 			
-				<a href="/src/github.com/Jwakefield97/prairie/lib/http/request.go">request.go</a>
+				<a href="#">request.go</a>
 			
-				<a href="/src/github.com/Jwakefield97/prairie/lib/http/response.go">response.go</a>
+				<a href="#">response.go</a>
 			
 			</span>
 			</p>
@@ -400,10 +409,10 @@ common 200 level statuses
 		
 			
 			
-			<h2 id="FormHTTPResponse">func <a href="/src/github.com/Jwakefield97/prairie/lib/http/response.go?s=2788:2857#L72">FormHTTPResponse</a>
+			<h2 id="FormHTTPResponse">func <a href="#">FormHTTPResponse</a>
 				<a class="permalink" href="#FormHTTPResponse">&#xb6;</a>
 			</h2>
-			<pre>func FormHTTPResponse(response *<a href="#Response">Response</a>, templatePath <a href="/pkg/builtin/#string">string</a>) []<a href="/pkg/builtin/#byte">byte</a></pre>
+			<pre>func FormHTTPResponse(response *<a href="#Response">Response</a>, templatePath <a href="/builtin/#string">string</a>, canGzip <a href="/builtin/#bool">bool</a>, isKeepAlive <a href="/builtin/#bool">bool</a>, keepAlivePeriod <a href="/builtin/#int">int</a>) ([]<a href="/builtin/#byte">byte</a>, <a href="/builtin/#error">error</a>)</pre>
 			<p>
 FormHTTPResponse - a function to form the actual http response
 </p>
@@ -414,12 +423,26 @@ FormHTTPResponse - a function to form the actual http response
 		
 			
 			
-			<h2 id="GetErrorMessage">func <a href="/src/github.com/Jwakefield97/prairie/lib/http/response.go?s=2637:2689#L67">GetErrorMessage</a>
-				<a class="permalink" href="#GetErrorMessage">&#xb6;</a>
+			<h2 id="GzipResponseBody">func <a href="#">GzipResponseBody</a>
+				<a class="permalink" href="#GzipResponseBody">&#xb6;</a>
 			</h2>
-			<pre>func GetErrorMessage(message <a href="/pkg/builtin/#string">string</a>, httpStatus <a href="/pkg/builtin/#int">int</a>)</pre>
+			<pre>func GzipResponseBody(response *<a href="#Response">Response</a>)</pre>
 			<p>
-GetErrorMessage - returns an appropriate http error response with custom message if supplied
+GzipResponseBody - gzip the reponse body of the request
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="ResponseToBytes">func <a href="#">ResponseToBytes</a>
+				<a class="permalink" href="#ResponseToBytes">&#xb6;</a>
+			</h2>
+			<pre>func ResponseToBytes(response *<a href="#Response">Response</a>) []<a href="/builtin/#byte">byte</a></pre>
+			<p>
+ResponseToBytes - convert a Reponse struct to a byte array
 </p>
 
 			
@@ -429,7 +452,7 @@ GetErrorMessage - returns an appropriate http error response with custom message
 		
 			
 			
-			<h2 id="FileStruct">type <a href="/src/github.com/Jwakefield97/prairie/lib/http/response.go?s=5875:5937#L149">FileStruct</a>
+			<h2 id="FileStruct">type <a href="#">FileStruct</a>
 				<a class="permalink" href="#FileStruct">&#xb6;</a>
 			</h2>
 			<p>
@@ -437,8 +460,9 @@ FileStruct - a struct to hold the file data and information about the file
 </p>
 
 			<pre>type FileStruct struct {
-<span id="FileStruct.Info"></span>    Info  <a href="/pkg/os/">os</a>.<a href="/pkg/os/#FileInfo">FileInfo</a>
-<span id="FileStruct.Bytes"></span>    Bytes []<a href="/pkg/builtin/#byte">byte</a>
+<span id="FileStruct.Info"></span>    Info  <a href="https://golang.org/pkg/os/">os</a>.<a href="https://golang.org/pkg/os/#FileInfo">FileInfo</a>
+<span id="FileStruct.Bytes"></span>    Bytes []<a href="/builtin/#byte">byte</a>
+<span id="FileStruct.Error"></span>    Error <a href="/builtin/#error">error</a>
 }</pre>
 
 			
@@ -455,7 +479,7 @@ FileStruct - a struct to hold the file data and information about the file
 		
 			
 			
-			<h2 id="Request">type <a href="/src/github.com/Jwakefield97/prairie/lib/http/request.go?s=262:851#L1">Request</a>
+			<h2 id="Request">type <a href="#">Request</a>
 				<a class="permalink" href="#Request">&#xb6;</a>
 			</h2>
 			<p>
@@ -463,14 +487,14 @@ Request - a struct used to model/modify requests
 </p>
 
 			<pre>type Request struct {
-<span id="Request.Type"></span>    Type       <a href="/pkg/builtin/#string">string</a>            <span class="comment">//Request type (GET,POST,PUT,DELETE). Probably need to make this a struct of constants</span>
-<span id="Request.FullPath"></span>    FullPath   <a href="/pkg/builtin/#string">string</a>            <span class="comment">//full path including paramters</span>
-<span id="Request.Path"></span>    Path       <a href="/pkg/builtin/#string">string</a>            <span class="comment">//just the path</span>
-<span id="Request.Version"></span>    Version    <a href="/pkg/builtin/#string">string</a>            <span class="comment">//http version of the request. Most commonly HTTP/1.1</span>
-<span id="Request.Headers"></span>    Headers    map[<a href="/pkg/builtin/#string">string</a>]<a href="/pkg/builtin/#string">string</a> <span class="comment">//headers contained in the request</span>
-<span id="Request.Parameters"></span>    Parameters map[<a href="/pkg/builtin/#string">string</a>]<a href="/pkg/builtin/#string">string</a> <span class="comment">//parameters from the path</span>
-<span id="Request.Cookies"></span>    Cookies    map[<a href="/pkg/builtin/#string">string</a>]<a href="/pkg/builtin/#string">string</a> <span class="comment">//a map of cookies from the http request</span>
-<span id="Request.Body"></span>    Body       map[<a href="/pkg/builtin/#string">string</a>]<a href="/pkg/builtin/#string">string</a> <span class="comment">//body of a post request</span>
+<span id="Request.Type"></span>    Type       <a href="/builtin/#string">string</a>            <span class="comment">//Request type (GET,POST,PUT,DELETE). Probably need to make this a struct of constants</span>
+<span id="Request.FullPath"></span>    FullPath   <a href="/builtin/#string">string</a>            <span class="comment">//full path including paramters</span>
+<span id="Request.Path"></span>    Path       <a href="/builtin/#string">string</a>            <span class="comment">//just the path</span>
+<span id="Request.Version"></span>    Version    <a href="/builtin/#string">string</a>            <span class="comment">//http version of the request. Most commonly HTTP/1.1</span>
+<span id="Request.Headers"></span>    Headers    map[<a href="/builtin/#string">string</a>]<a href="/builtin/#string">string</a> <span class="comment">//headers contained in the request</span>
+<span id="Request.Parameters"></span>    Parameters map[<a href="/builtin/#string">string</a>]<a href="/builtin/#string">string</a> <span class="comment">//parameters from the path</span>
+<span id="Request.Cookies"></span>    Cookies    map[<a href="/builtin/#string">string</a>]<a href="/builtin/#string">string</a> <span class="comment">//a map of cookies from the http request</span>
+<span id="Request.Body"></span>    Body       map[<a href="/builtin/#string">string</a>]<a href="/builtin/#string">string</a> <span class="comment">//body of a post request</span>
 }</pre>
 
 			
@@ -483,7 +507,7 @@ Request - a struct used to model/modify requests
 
 			
 				
-				<h3 id="NewRequest">func <a href="/src/github.com/Jwakefield97/prairie/lib/http/request.go?s=908:933#L11">NewRequest</a>
+				<h3 id="NewRequest">func <a href="#">NewRequest</a>
 					<a class="permalink" href="#NewRequest">&#xb6;</a>
 				</h3>
 				<pre>func NewRequest() <a href="#Request">Request</a></pre>
@@ -499,7 +523,7 @@ NewRequest - return an initialized Reqest struct
 		
 			
 			
-			<h2 id="Response">type <a href="/src/github.com/Jwakefield97/prairie/lib/http/response.go?s=543:1145#L15">Response</a>
+			<h2 id="Response">type <a href="#">Response</a>
 				<a class="permalink" href="#Response">&#xb6;</a>
 			</h2>
 			<p>
@@ -507,16 +531,16 @@ Response - a struct to model/modify responses.
 </p>
 
 			<pre>type Response struct {
-<span id="Response.Status"></span>    Status         <a href="/pkg/builtin/#int">int</a>
-<span id="Response.Template"></span>    Template       <a href="/pkg/builtin/#string">string</a>      <span class="comment">//name of the template to return</span>
+<span id="Response.Status"></span>    Status         <a href="/builtin/#int">int</a>
+<span id="Response.Template"></span>    Template       <a href="/builtin/#string">string</a>      <span class="comment">//name of the template to return</span>
 <span id="Response.TemplateParams"></span>    TemplateParams interface{} <span class="comment">//array of parameters to pass to the template</span>
-<span id="Response.JSON"></span>    JSON           []<a href="/pkg/builtin/#byte">byte</a>      <span class="comment">//json to return. I&#39;m pretty sure that golang is marshalled into byte arrays. this might need to be updated later</span>
-<span id="Response.File"></span>    File           <a href="/pkg/builtin/#string">string</a>      <span class="comment">//location of the file to be returned</span>
-<span id="Response.Html"></span>    Html           <a href="/pkg/builtin/#string">string</a>
-<span id="Response.Text"></span>    Text           <a href="/pkg/builtin/#string">string</a>            <span class="comment">//plain text to be sent back</span>
-<span id="Response.Headers"></span>    Headers        map[<a href="/pkg/builtin/#string">string</a>]<a href="/pkg/builtin/#string">string</a> <span class="comment">//headers to include in the request</span>
-<span id="Response.Cookies"></span>    Cookies        []<a href="/pkg/builtin/#string">string</a>
-<span id="Response.Payload"></span>    Payload        []<a href="/pkg/builtin/#byte">byte</a>
+<span id="Response.JSON"></span>    JSON           []<a href="/builtin/#byte">byte</a>      <span class="comment">//json to return. I&#39;m pretty sure that golang is marshalled into byte arrays. this might need to be updated later</span>
+<span id="Response.File"></span>    File           <a href="/builtin/#string">string</a>      <span class="comment">//location of the file to be returned</span>
+<span id="Response.Html"></span>    Html           <a href="/builtin/#string">string</a>
+<span id="Response.Text"></span>    Text           <a href="/builtin/#string">string</a>            <span class="comment">//plain text to be sent back</span>
+<span id="Response.Headers"></span>    Headers        map[<a href="/builtin/#string">string</a>]<a href="/builtin/#string">string</a> <span class="comment">//headers to include in the request</span>
+<span id="Response.Cookies"></span>    Cookies        []<a href="/builtin/#string">string</a>
+<span id="Response.Payload"></span>    Payload        []<a href="/builtin/#byte">byte</a>
 }</pre>
 
 			
@@ -529,7 +553,7 @@ Response - a struct to model/modify responses.
 
 			
 				
-				<h3 id="GetDefaultResponse">func <a href="/src/github.com/Jwakefield97/prairie/lib/http/response.go?s=2435:2469#L60">GetDefaultResponse</a>
+				<h3 id="GetDefaultResponse">func <a href="#">GetDefaultResponse</a>
 					<a class="permalink" href="#GetDefaultResponse">&#xb6;</a>
 				</h3>
 				<pre>func GetDefaultResponse() <a href="#Response">Response</a></pre>
@@ -541,7 +565,19 @@ GetDefaultResponse - get the default response struct with preset headers
 				
 			
 				
-				<h3 id="NewResponse">func <a href="/src/github.com/Jwakefield97/prairie/lib/http/response.go?s=1198:1225#L29">NewResponse</a>
+				<h3 id="GetErrorMessage">func <a href="#">GetErrorMessage</a>
+					<a class="permalink" href="#GetErrorMessage">&#xb6;</a>
+				</h3>
+				<pre>func GetErrorMessage(message <a href="/builtin/#string">string</a>, httpStatus <a href="/builtin/#int">int</a>) *<a href="#Response">Response</a></pre>
+				<p>
+GetErrorMessage - returns an appropriate http error response with custom message if supplied
+</p>
+
+				
+				
+			
+				
+				<h3 id="NewResponse">func <a href="#">NewResponse</a>
 					<a class="permalink" href="#NewResponse">&#xb6;</a>
 				</h3>
 				<pre>func NewResponse() <a href="#Response">Response</a></pre>
@@ -555,10 +591,10 @@ NewResponse - constructor for Reponse struct
 
 			
 				
-				<h3 id="Response.InvalidateCookie">func (*Response) <a href="/src/github.com/Jwakefield97/prairie/lib/http/response.go?s=2043:2102#L53">InvalidateCookie</a>
+				<h3 id="Response.InvalidateCookie">func (*Response) <a href="#">InvalidateCookie</a>
 					<a class="permalink" href="#Response.InvalidateCookie">&#xb6;</a>
 				</h3>
-				<pre>func (r *<a href="#Response">Response</a>) InvalidateCookie(key <a href="/pkg/builtin/#string">string</a>, val <a href="/pkg/builtin/#string">string</a>)</pre>
+				<pre>func (r *<a href="#Response">Response</a>) InvalidateCookie(key <a href="/builtin/#string">string</a>, val <a href="/builtin/#string">string</a>)</pre>
 				<p>
 InvalidateCookie - a function used to invalidate a cookie by setting its date to a date in the past
 </p>
@@ -568,10 +604,10 @@ InvalidateCookie - a function used to invalidate a cookie by setting its date to
 				
 			
 				
-				<h3 id="Response.SetCookie">func (*Response) <a href="/src/github.com/Jwakefield97/prairie/lib/http/response.go?s=1517:1582#L44">SetCookie</a>
+				<h3 id="Response.SetCookie">func (*Response) <a href="#">SetCookie</a>
 					<a class="permalink" href="#Response.SetCookie">&#xb6;</a>
 				</h3>
-				<pre>func (r *<a href="#Response">Response</a>) SetCookie(key <a href="/pkg/builtin/#string">string</a>, val <a href="/pkg/builtin/#string">string</a>, seconds <a href="/pkg/builtin/#int">int</a>)</pre>
+				<pre>func (r *<a href="#Response">Response</a>) SetCookie(key <a href="/builtin/#string">string</a>, val <a href="/builtin/#string">string</a>, seconds <a href="/builtin/#int">int</a>)</pre>
 				<p>
 SetCookie - add a cookie to set in a response struct
 </p>
@@ -579,6 +615,33 @@ SetCookie - add a cookie to set in a response struct
 				
 				
 				
+			
+		
+			
+			
+			<h2 id="UploadFile">type <a href="#">UploadFile</a>
+				<a class="permalink" href="#UploadFile">&#xb6;</a>
+			</h2>
+			<p>
+UploadFile - a struct to represent the uploaded file from a post request
+</p>
+
+			<pre>type UploadFile struct {
+<span id="UploadFile.Contents"></span>    Contents []<a href="/builtin/#byte">byte</a>
+<span id="UploadFile.FileType"></span>    FileType <a href="/builtin/#string">string</a>
+<span id="UploadFile.FileName"></span>    FileName <a href="/builtin/#string">string</a>
+}</pre>
+
+			
+
+			
+
+			
+			
+			
+
+			
+
 			
 		
 	
@@ -596,8 +659,7 @@ Build version go1.10.3.<br>
 Except as <a href="https://developers.google.com/site-policies#restrictions">noted</a>,
 the content of this page is licensed under the
 Creative Commons Attribution 3.0 License,
-and code is licensed under a <a href="/LICENSE">BSD license</a>.<br>
-<a href="/doc/tos.html">Terms of Service</a> |
+and code is licensed under a <a href="#">BSD license</a>.<br>
 <a href="http://www.google.com/intl/en/policies/privacy/">Privacy Policy</a>
 </div>
 
@@ -611,7 +673,7 @@ and code is licensed under a <a href="/LICENSE">BSD license</a>.<br>
 
 
 <script>var goVersion = "go1.10.3";</script>
-<script type="text/javascript" src=/resources/js/godocs.js"></script>
+<script type="text/javascript" src="/resources/js/godocs.js"></script>
 
 </body>
 </html>

@@ -87,7 +87,12 @@
 			<div id="manual-nav">
 			<dl>
 			
+				<dd><a href="#pkg-constants">Constants</a></dd>
 			
+			
+			
+				
+				<dd><a href="#CreateLogFiles">func CreateLogFiles(log *Log)</a></dd>
 			
 				
 				<dd><a href="#GetContentLength">func GetContentLength(requestStr string) (int, int)</a></dd>
@@ -98,6 +103,23 @@
 				
 				<dd><a href="#ParseHTTPRequest">func ParseHTTPRequest(requestStr string) http.Request</a></dd>
 			
+			
+				
+				<dd><a href="#Log">type Log</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#NewLog">func NewLog(path string) Log</a></dd>
+				
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Log.Access">func (l Log) Access(message string)</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Log.Debug">func (l Log) Debug(message string)</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Log.Error">func (l Log) Error(message string)</a></dd>
+				
 			
 			
 			</dl>
@@ -110,11 +132,11 @@
 			<p>
 			<span style="font-size:90%">
 			
-				<a href="/src/github.com/Jwakefield97/prairie/lib/utils/cookieUtils.go">cookieUtils.go</a>
+				<a href="#">cookieUtils.go</a>
 			
-				<a href="/src/github.com/Jwakefield97/prairie/lib/utils/logUtils.go">logUtils.go</a>
+				<a href="#">logUtils.go</a>
 			
-				<a href="/src/github.com/Jwakefield97/prairie/lib/utils/parseUtils.go">parseUtils.go</a>
+				<a href="#">parseUtils.go</a>
 			
 			</span>
 			</p>
@@ -160,14 +182,37 @@
 		</div> <!-- #pkg-callgraph -->
 
 		
+			<h2 id="pkg-constants">Constants</h2>
+			
+				<p>
+TIME_LAYOUT - the layout used to format the time of the log entry
+</p>
+
+				<pre>const <span id="TIME_LAYOUT">TIME_LAYOUT</span> = &#34;Jan 2, 2006 at 3:04pm (MST)&#34;</pre>
+			
+		
 		
 		
 			
 			
-			<h2 id="GetContentLength">func <a href="/src/github.com/Jwakefield97/prairie/lib/utils/parseUtils.go?s=819:870#L16">GetContentLength</a>
+			<h2 id="CreateLogFiles">func <a href="#">CreateLogFiles</a>
+				<a class="permalink" href="#CreateLogFiles">&#xb6;</a>
+			</h2>
+			<pre>func CreateLogFiles(log *<a href="#Log">Log</a>)</pre>
+			<p>
+CreateLogFiles - a function to create the log files if they dont exist
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="GetContentLength">func <a href="#">GetContentLength</a>
 				<a class="permalink" href="#GetContentLength">&#xb6;</a>
 			</h2>
-			<pre>func GetContentLength(requestStr <a href="/pkg/builtin/#string">string</a>) (<a href="/pkg/builtin/#int">int</a>, <a href="/pkg/builtin/#int">int</a>)</pre>
+			<pre>func GetContentLength(requestStr <a href="/builtin//#string">string</a>) (<a href="/builtin//#int">int</a>, <a href="/builtin//#int">int</a>)</pre>
 			<p>
 GetContentLength - a function to get only the header/content length from the request string
 </p>
@@ -178,10 +223,10 @@ GetContentLength - a function to get only the header/content length from the req
 		
 			
 			
-			<h2 id="ParseCookies">func <a href="/src/github.com/Jwakefield97/prairie/lib/utils/cookieUtils.go?s=304:344#L4">ParseCookies</a>
+			<h2 id="ParseCookies">func <a href="#">ParseCookies</a>
 				<a class="permalink" href="#ParseCookies">&#xb6;</a>
 			</h2>
-			<pre>func ParseCookies(request *<a href="/pkg/github.com/Jwakefield97/prairie/lib/http/">http</a>.<a href="/pkg/github.com/Jwakefield97/prairie/lib/http/#Request">Request</a>)</pre>
+			<pre>func ParseCookies(request *<a href="/http/">http</a>.<a href="/http/#Request">Request</a>)</pre>
 			<p>
 ParseCookies - a function to parse the cookies out of a given request header.
 </p>
@@ -192,10 +237,10 @@ ParseCookies - a function to parse the cookies out of a given request header.
 		
 			
 			
-			<h2 id="ParseHTTPRequest">func <a href="/src/github.com/Jwakefield97/prairie/lib/utils/parseUtils.go?s=1366:1419#L34">ParseHTTPRequest</a>
+			<h2 id="ParseHTTPRequest">func <a href="#">ParseHTTPRequest</a>
 				<a class="permalink" href="#ParseHTTPRequest">&#xb6;</a>
 			</h2>
-			<pre>func ParseHTTPRequest(requestStr <a href="/pkg/builtin/#string">string</a>) <a href="/pkg/github.com/Jwakefield97/prairie/lib/http/">http</a>.<a href="/pkg/github.com/Jwakefield97/prairie/lib/http/#Request">Request</a></pre>
+			<pre>func ParseHTTPRequest(requestStr <a href="/builtin//#string">string</a>) <a href="/http/">http</a>.<a href="/http/#Request">Request</a></pre>
 			<p>
 ParseHTTPRequest - parse an incoming http request and return a Request struct
 </p>
@@ -204,6 +249,82 @@ ParseHTTPRequest - parse an incoming http request and return a Request struct
 			
 
 		
+		
+			
+			
+			<h2 id="Log">type <a href="#">Log</a>
+				<a class="permalink" href="#Log">&#xb6;</a>
+			</h2>
+			<p>
+Log - the logger used to log errors, debug, and access information
+</p>
+
+			<pre>type Log struct {
+<span id="Log.Path"></span>    Path <a href="/builtin//#string">string</a> <span class="comment">//location of the log files</span>
+}</pre>
+
+			
+
+			
+
+			
+			
+			
+
+			
+				
+				<h3 id="NewLog">func <a href="3">NewLog</a>
+					<a class="permalink" href="#NewLog">&#xb6;</a>
+				</h3>
+				<pre>func NewLog(path <a href="/builtin//#string">string</a>) <a href="#Log">Log</a></pre>
+				<p>
+NewLog - return a new log instance
+</p>
+
+				
+				
+			
+
+			
+				
+				<h3 id="Log.Access">func (Log) <a href="#">Access</a>
+					<a class="permalink" href="#Log.Access">&#xb6;</a>
+				</h3>
+				<pre>func (l <a href="#Log">Log</a>) Access(message <a href="/builtin//#string">string</a>)</pre>
+				<p>
+Access - log an access message
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Log.Debug">func (Log) <a href="#">Debug</a>
+					<a class="permalink" href="#Log.Debug">&#xb6;</a>
+				</h3>
+				<pre>func (l <a href="#Log">Log</a>) Debug(message <a href="/builtin//#string">string</a>)</pre>
+				<p>
+Debug - log a debug message
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Log.Error">func (Log) <a href="#">Error</a>
+					<a class="permalink" href="#Log.Error">&#xb6;</a>
+				</h3>
+				<pre>func (l <a href="#Log">Log</a>) Error(message <a href="/builtin//#string">string</a>)</pre>
+				<p>
+Error - log an error
+</p>
+
+				
+				
+				
+			
 		
 	
 
@@ -220,8 +341,7 @@ Build version go1.10.3.<br>
 Except as <a href="https://developers.google.com/site-policies#restrictions">noted</a>,
 the content of this page is licensed under the
 Creative Commons Attribution 3.0 License,
-and code is licensed under a <a href="/LICENSE">BSD license</a>.<br>
-<a href="/doc/tos.html">Terms of Service</a> |
+and code is licensed under a <a href="#">BSD license</a>.<br>
 <a href="http://www.google.com/intl/en/policies/privacy/">Privacy Policy</a>
 </div>
 

@@ -28,6 +28,9 @@ func main() {
 	app.Get("/utils/", func(routeObj *prairie.RouteObject) {
 		routeObj.Response.File = "templates/utils.html"
 	})
+	app.Get("/builtin/", func(routeObj *prairie.RouteObject) {
+		routeObj.Response.File = "templates/builtin.html"
+	})
 	app.Get("/favicon.ico", func(routeObj *prairie.RouteObject) {
 		routeObj.Response.File = "resources/images/favicon.ico"
 	})

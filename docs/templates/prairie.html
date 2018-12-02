@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#375EAB">
+
+  <title>prairie - The Go Programming Language</title>
+
+<link type="text/css" rel="stylesheet" href="/resources/css/style.css">
+
+<link rel="stylesheet" href="/resources/css/jquery.treeview.css">
+<script type="text/javascript">window.initFuncs = [];</script>
+</head>
+<body>
+
+
+
+<div id="page" class="wide">
+<div class="container">
+
+
+  <h1>
+    Package prairie
+    <span class="text-muted"></span>
+  </h1>
+
+
+
+
+
+
+
+<div id="nav"></div>
+
+
+<!--
+	Copyright 2009 The Go Authors. All rights reserved.
+	Use of this source code is governed by a BSD-style
+	license that can be found in the LICENSE file.
+-->
+<!--
+	Note: Static (i.e., not template-generated) href and id
+	attributes start with "pkg-" to make it impossible for
+	them to conflict with generated attributes (some of which
+	correspond to Go identifiers).
+-->
+
+	<script type='text/javascript'>
+	document.ANALYSIS_DATA = null;
+	document.CALLGRAPH = null;
+	</script>
+
+	
+		
+		<div id="short-nav">
+			<dl>
+			<dd><code>import "github.com/Jwakefield97/prairie"</code></dd>
+			</dl>
+			<dl>
+			<dd><a href="#pkg-overview" class="overviewLink">Overview</a></dd>
+			<dd><a href="#pkg-index" class="indexLink">Index</a></dd>
+			
+			
+				<dd><a href="#pkg-subdirectories">Subdirectories</a></dd>
+			
+			</dl>
+		</div>
+		<!-- The package's Name is printed as title by the top-level template -->
+		<div id="pkg-overview" class="toggleVisible">
+			<div class="collapsed">
+				<h2 class="toggleButton" title="Click to show Overview section">Overview ▹</h2>
+			</div>
+			<div class="expanded">
+				<h2 class="toggleButton" title="Click to hide Overview section">Overview ▾</h2>
+				
+			</div>
+		</div>
+		
+
+		<div id="pkg-index" class="toggleVisible">
+		<div class="collapsed">
+			<h2 class="toggleButton" title="Click to show Index section">Index ▹</h2>
+		</div>
+		<div class="expanded">
+			<h2 class="toggleButton" title="Click to hide Index section">Index ▾</h2>
+
+		<!-- Table of contents for API; must be named manual-nav to turn off auto nav. -->
+			<div id="manual-nav">
+			<dl>
+			
+				<dd><a href="#pkg-constants">Constants</a></dd>
+			
+			
+				<dd><a href="#pkg-variables">Variables</a></dd>
+			
+			
+			
+				
+				<dd><a href="#Prairie">type Prairie</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#NewPrairieInstance">func NewPrairieInstance(ip string, port int) Prairie</a></dd>
+				
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Prairie.Get">func (p Prairie) Get(url string, callback RequestCallback)</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Prairie.Post">func (p Prairie) Post(url string, callback RequestCallback)</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Prairie.SetLogPath">func (p *Prairie) SetLogPath(path string)</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Prairie.Start">func (p Prairie) Start()</a></dd>
+				
+			
+				
+				<dd><a href="#RequestCallback">type RequestCallback</a></dd>
+				
+				
+			
+				
+				<dd><a href="#RouteObject">type RouteObject</a></dd>
+				
+				
+			
+			
+			</dl>
+			</div><!-- #manual-nav -->
+
+		
+
+		
+			<h3>Package files</h3>
+			<p>
+			<span style="font-size:90%">
+			
+				<a href="#">Prairie.go</a>
+			
+			</span>
+			</p>
+		
+		</div><!-- .expanded -->
+		</div><!-- #pkg-index -->
+
+		<div id="pkg-callgraph" class="toggle" style="display: none">
+		<div class="collapsed">
+			<h2 class="toggleButton" title="Click to show Internal Call Graph section">Internal call graph ▹</h2>
+		</div> <!-- .expanded -->
+		<div class="expanded">
+			<h2 class="toggleButton" title="Click to hide Internal Call Graph section">Internal call graph ▾</h2>
+			<p>
+			  In the call graph viewer below, each node
+			  is a function belonging to this package
+			  and its children are the functions it
+			  calls&mdash;perhaps dynamically.
+			</p>
+			<p>
+			  The root nodes are the entry points of the
+			  package: functions that may be called from
+			  outside the package.
+			  There may be non-exported or anonymous
+			  functions among them if they are called
+			  dynamically from another package.
+			</p>
+			<p>
+			  Click a node to visit that function's source code.
+			  From there you can visit its callers by
+			  clicking its declaring <code>func</code>
+			  token.
+			</p>
+			<p>
+			  Functions may be omitted if they were
+			  determined to be unreachable in the
+			  particular programs or tests that were
+			  analyzed.
+			</p>
+			<!-- Zero means show all package entry points. -->
+			<ul style="margin-left: 0.5in" id="callgraph-0" class="treeview"></ul>
+		</div>
+		</div> <!-- #pkg-callgraph -->
+
+		
+			<h2 id="pkg-constants">Constants</h2>
+			
+				<p>
+BufferSize - the size of the buffer to receive from the socket
+</p>
+
+				<pre>const <span id="BufferSize">BufferSize</span> = 10000</pre>
+			
+				<p>
+KeepAlivePeriod - how long to keep a connection alive
+</p>
+
+				<pre>const <span id="KeepAlivePeriod">KeepAlivePeriod</span> = 30</pre>
+			
+		
+		
+			<h2 id="pkg-variables">Variables</h2>
+			
+				<p>
+Session - the session store to be accessed through routes <a href="https://golang.org/pkg/sync/">https://golang.org/pkg/sync/</a>
+</p>
+
+				<pre>var <span id="Session">Session</span> <a href="https://golang.org/pkg/sync/">sync</a>.<a href="https://golang.org/pkg/sync/#Map">Map</a></pre>
+			
+		
+		
+		
+			
+			
+			<h2 id="Prairie">type <a href="#">Prairie</a>
+				<a class="permalink" href="#Prairie">&#xb6;</a>
+			</h2>
+			<p>
+Prairie - the server struct to act as an interface to the framework.
+</p>
+
+			<pre>type Prairie struct {
+<span id="Prairie.TemplateDir"></span>    TemplateDir <a href="/builtin//#string">string</a>
+<span id="Prairie.ResourceDir"></span>    ResourceDir <a href="/builtin//#string">string</a>
+
+<span id="Prairie.DefaultResponse"></span>    DefaultResponse <a href="/http/">http</a>.<a href="/http/#Response">Response</a>
+<span id="Prairie.Log"></span>    Log             <a href="/utils/">utils</a>.<a href="/utils/#Log">Log</a> <span class="comment">//logger for the prairie instance</span>
+    <span class="comment">// contains filtered or unexported fields</span>
+}</pre>
+
+			
+
+			
+
+			
+			
+			
+
+			
+				
+				<h3 id="NewPrairieInstance">func <a href="#">NewPrairieInstance</a>
+					<a class="permalink" href="#NewPrairieInstance">&#xb6;</a>
+				</h3>
+				<pre>func NewPrairieInstance(ip <a href="/builtin//#string">string</a>, port <a href="/builtin//#int">int</a>) <a href="#Prairie">Prairie</a></pre>
+				<p>
+NewPrairieInstance - a funciton to create a new Prairie server instance.
+</p>
+
+				
+				
+			
+
+			
+				
+				<h3 id="Prairie.Get">func (Prairie) <a href="#">Get</a>
+					<a class="permalink" href="#Prairie.Get">&#xb6;</a>
+				</h3>
+				<pre>func (p <a href="#Prairie">Prairie</a>) Get(url <a href="/builtin//#string">string</a>, callback <a href="#RequestCallback">RequestCallback</a>)</pre>
+				<p>
+Get - a function for adding a get request mapping to the server.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Prairie.Post">func (Prairie) <a href="#">Post</a>
+					<a class="permalink" href="#Prairie.Post">&#xb6;</a>
+				</h3>
+				<pre>func (p <a href="#Prairie">Prairie</a>) Post(url <a href="/builtin//#string">string</a>, callback <a href="#RequestCallback">RequestCallback</a>)</pre>
+				<p>
+Post - a function for adding a post request mapping to the server.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Prairie.SetLogPath">func (*Prairie) <a href="#">SetLogPath</a>
+					<a class="permalink" href="#Prairie.SetLogPath">&#xb6;</a>
+				</h3>
+				<pre>func (p *<a href="#Prairie">Prairie</a>) SetLogPath(path <a href="/builtin//#string">string</a>)</pre>
+				<p>
+SetLogPath - set the location of the log files
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Prairie.Start">func (Prairie) <a href="#">Start</a>
+					<a class="permalink" href="#Prairie.Start">&#xb6;</a>
+				</h3>
+				<pre>func (p <a href="#Prairie">Prairie</a>) Start()</pre>
+				<p>
+Start - a function used to start the server.
+</p>
+
+				
+				
+				
+			
+		
+			
+			
+			<h2 id="RequestCallback">type <a href="#">RequestCallback</a>
+				<a class="permalink" href="#RequestCallback">&#xb6;</a>
+			</h2>
+			<p>
+RequestCallback - a callback function passed to the Get or Post functions to be called when a url mapping is mapped.
+</p>
+
+			<pre>type RequestCallback func(routeObj *<a href="#RouteObject">RouteObject</a>)</pre>
+
+			
+
+			
+
+			
+			
+			
+
+			
+
+			
+		
+			
+			
+			<h2 id="RouteObject">type <a href="#">RouteObject</a>
+				<a class="permalink" href="#RouteObject">&#xb6;</a>
+			</h2>
+			<p>
+RouteObject - the object passed to the router methods that holds the request and response.
+</p>
+
+			<pre>type RouteObject struct {
+<span id="RouteObject.Request"></span>    Request  <a href="/http/">http</a>.<a href="/http/#Request">Request</a>
+<span id="RouteObject.Response"></span>    Response <a href="/http/">http</a>.<a href="/http/#Response">Response</a>
+<span id="RouteObject.Session"></span>    Session  *<a href="https://golang.org/pkg/sync/">sync</a>.<a href="https://golang.org/pkg/sync/#Map">Map</a>
+}</pre>
+
+			
+
+			
+
+			
+			
+			
+
+			
+
+			
+		
+	
+
+	
+
+
+
+
+
+	
+	
+		<h2 id="pkg-subdirectories">Subdirectories</h2>
+	
+	
+
+
+	<div class="pkg-dir">
+		<table>
+			<tr>
+				<th class="pkg-name">Name</th>
+				<th class="pkg-synopsis">Synopsis</th>
+			</tr>
+
+			
+			<tr>
+				<td colspan="2"><a href="..">..</a></td>
+			</tr>
+			
+
+			
+				
+					<tr>
+						<td class="pkg-name" style="padding-left: 0px;">
+							<a href="/">docs</a>
+						</td>
+						<td class="pkg-synopsis">
+							
+						</td>
+					</tr>
+				
+			
+				
+					<tr>
+						<td class="pkg-name" style="padding-left: 0px;">
+							<a href="/">lib</a>
+						</td>
+						<td class="pkg-synopsis">
+							
+						</td>
+					</tr>
+				
+			
+				
+					<tr>
+						<td class="pkg-name" style="padding-left: 20px;">
+							<a href="/http/">http</a>
+						</td>
+						<td class="pkg-synopsis">
+							
+						</td>
+					</tr>
+				
+			
+				
+					<tr>
+						<td class="pkg-name" style="padding-left: 20px;">
+							<a href="/utils/">utils</a>
+						</td>
+						<td class="pkg-synopsis">
+							
+						</td>
+					</tr>
+				
+			
+		</table>
+	</div>
+
+
+	
+
+
+
+<div id="footer">
+Build version go1.10.3.<br>
+Except as <a href="https://developers.google.com/site-policies#restrictions">noted</a>,
+the content of this page is licensed under the
+Creative Commons Attribution 3.0 License,
+and code is licensed under a <a href="/LICENSE">BSD license</a>.<br>
+<a href="http://www.google.com/intl/en/policies/privacy/">Privacy Policy</a>
+</div>
+
+</div><!-- .container -->
+</div><!-- #page -->
+
+<!-- TODO(adonovan): load these from <head> using "defer" attribute? -->
+<script type="text/javascript" src="/resources/js/jquery.js"></script>
+<script type="text/javascript" src="/resources/js/jquery.treeview.js"></script>
+<script type="text/javascript" src="/resources/js/jquery.treeview.edit.js"></script>
+
+
+<script>var goVersion = "go1.10.3";</script>
+<script type="text/javascript" src="/resources/js/godocs.js"></script>
+
+</body>
+</html>
+
