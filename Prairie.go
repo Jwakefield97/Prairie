@@ -149,6 +149,7 @@ func handleRequest(p Prairie, conn *net.TCPConn) {
 	responseMsg := make([]byte, 0)
 	//canGzip := strings.Contains(strings.ToLower(request.Headers["Accept-Encoding"]), "gzip") //check whether the message can be gzipped
 	canGzip := false
+
 	//match routes and call callback
 	if strings.EqualFold(request.Type, "get") {
 		if callback, ok := p.getMappings[request.Path]; ok { //if mapping was found
@@ -162,6 +163,7 @@ func handleRequest(p Prairie, conn *net.TCPConn) {
 				responseMsg = http.FormHTTPResponse(&routeObj.Response, p.TemplateDir, canGzip)
 			} else {
 				p.Log.Access("Not Found (GET) - " + request.Path) // log path not found
+				responseMsg = http.ResponseToBytes(http.GetErrorMessage("404 Path Not Found", http.HTTP_NOT_FOUND))
 			}
 		}
 	} else if strings.EqualFold(request.Type, "post") {
@@ -170,17 +172,19 @@ func handleRequest(p Prairie, conn *net.TCPConn) {
 			responseMsg = http.FormHTTPResponse(&routeObj.Response, p.TemplateDir, canGzip)
 		} else {
 			p.Log.Access("Not Found (POST) - " + request.Path) // log path not found
+			responseMsg = http.ResponseToBytes(http.GetErrorMessage("404 Path Not Found", http.HTTP_NOT_FOUND))
 		}
 
 	} else {
 		p.Log.Access("Unknown Request Type (" + request.Type + ") - " + request.Path) // unknown request type
+		responseMsg = http.ResponseToBytes(http.GetErrorMessage("404 Path Not Found", http.HTTP_METHOD_NOT_ALLOWED))
 	}
 
-	//fmt.Println(time.Now().Format(time.RFC1123))
-	if len(responseMsg) > 0 { //if less than 0 it is an invalid request
-		//fmt.Println(string(responseMsg))
-		conn.Write(responseMsg)
+	if len(responseMsg) <= 0 { //if less than 0 it is an invalid request
+		p.Log.Error("An internal server error was encountered")
+		responseMsg = http.ResponseToBytes(http.GetErrorMessage("500 Internal Server Error", http.HTTP_INTERNAL_SERVER_ERROR))
 	}
+
+	conn.Write(responseMsg) //send message over connection
 	responseMsg = nil
-
 }
