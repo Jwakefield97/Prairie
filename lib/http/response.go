@@ -3,10 +3,10 @@ package http
 import (
 	"bytes"
 	"compress/gzip"
+	"errors"
 	"fmt"
 	"html/template"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -73,8 +73,20 @@ func GetDefaultResponse() Response {
 }
 
 // GetErrorMessage - returns an appropriate http error response with custom message if supplied
-func GetErrorMessage(message string, httpStatus int) {
-	//TODO: implement me
+func GetErrorMessage(message string, httpStatus int) *Response {
+	response := NewResponse()
+	response.Headers["Date"] = time.Now().Format(time.RFC1123)
+	response.Headers["Connection"] = "close"
+	response.Headers["Server"] = "Prairie"
+	response.Headers["Accept-Ranges"] = "bytes"
+	response.Headers["Content-Type"] = "text/html"
+	response.Status = httpStatus
+
+	response.Payload = []byte(message)
+
+	response.Headers["Content-Length"] = strconv.Itoa(len(response.Payload))
+
+	return &response
 }
 
 // FormHTTPResponse - a function to form the actual http response
@@ -85,19 +97,19 @@ func FormHTTPResponse(response *Response, templatePath string, canGzip bool) []b
 	response.Headers["Server"] = "Prairie"
 	response.Headers["Accept-Ranges"] = "bytes"
 
-	if strings.TrimSpace(response.Html) != "" {
+	if strings.TrimSpace(response.Html) != "" { //if html response
 		response.Payload = []byte(response.Html)
 		response.Headers["Content-Type"] = "text/html"
 
-	} else if strings.TrimSpace(string(response.JSON)) != "" {
+	} else if strings.TrimSpace(string(response.JSON)) != "" { //if json response
 		response.Payload = response.JSON
 		response.Headers["Content-Type"] = "application/json"
 
-	} else if strings.TrimSpace(response.Text) != "" {
+	} else if strings.TrimSpace(response.Text) != "" { //if plain text response
 		response.Payload = []byte(response.Text)
 		response.Headers["Content-Type"] = "text/plain"
 
-	} else if strings.TrimSpace(response.Template) != "" {
+	} else if strings.TrimSpace(response.Template) != "" { //if template response
 		absPath, _ := filepath.Abs(templatePath) //get absolute path to templates
 
 		response.Headers["Content-Type"] = "text/html"
@@ -110,47 +122,36 @@ func FormHTTPResponse(response *Response, templatePath string, canGzip bool) []b
 
 		response.Payload = []byte(tempBuf.String()) //set the payload of the response
 
-	} else if strings.TrimSpace(response.File) != "" {
+	} else if strings.TrimSpace(response.File) != "" { //if file response
 		file := getFile(response.File)
 		response.Payload = file.Bytes
-		if file.Info != nil {
+		if file.Error == nil && file.Info != nil {
 			response.Headers["Last-Modified"] = file.Info.ModTime().Format(time.RFC1123)
-			fileTypesArr := strings.Split(file.Info.Name(), ".")
-			//TODO: check to make sure files have a "."
-			fileType := fileTypesArr[len(fileTypesArr)-1]
-			switch fileType {
-			case "html":
-				response.Headers["Content-Type"] = "text/html"
-			case "css":
-				response.Headers["Content-Type"] = "text/css"
-			case "js":
-				response.Headers["Content-Type"] = "application/javascript"
-			case "png":
-				response.Headers["Content-Type"] = "image/png"
-			case "jpeg":
-				response.Headers["Content-Type"] = "image/jpeg"
-			case "gif":
-				response.Headers["Content-Type"] = "image/gif"
-			case "mpeg":
-				response.Headers["Content-Type"] = "audio/mpeg"
-			case "json":
-				response.Headers["Content-Type"] = "application/json"
-			case "ico":
-				response.Headers["Content-Type"] = "image/x-icon"
-			default:
-				response.Headers["Content-Type"] = "text/plain" //default to plain text if no file type matches
+			contentType, err := getFileContentType(file.Info.Name())
+			if err == nil {
+				response.Headers["Content-Type"] = contentType
+			} else {
+				response = GetErrorMessage("404 not found", HTTP_NOT_FOUND) // if something was wrong with the file name
 			}
+		} else {
+			response = GetErrorMessage("404 not found", HTTP_NOT_FOUND) // file was not found
 		}
-
 	}
 	if canGzip {
 		response.Headers["Content-Encoding"] = "gzip"
 		GzipResponseBody(response)
 	}
 	response.Headers["Content-Length"] = strconv.Itoa(len(response.Payload))
+	message = ResponseToBytes(response)
+	return message
+}
 
-	message = append(message, []byte("HTTP/1.1 200 \n")...) //start with status line
-	for k, v := range response.Headers {                    //append headers
+// ResponseToBytes - convert a Reponse struct to a byte array
+func ResponseToBytes(response *Response) []byte {
+	message := make([]byte, 0)
+
+	message = append(message, []byte("HTTP/1.1 "+strconv.Itoa(response.Status)+" \n")...) //start with status line
+	for k, v := range response.Headers {                                                  //append headers
 		header := k + ": " + v + "\n"
 		message = append(message, []byte(header)...)
 	}
@@ -178,12 +179,50 @@ func GzipResponseBody(response *Response) {
 type FileStruct struct {
 	Info  os.FileInfo
 	Bytes []byte
+	Error error
+}
+
+// getFileContentType - a function to get the content type of a given file
+func getFileContentType(fileName string) (string, error) {
+	returnString := ""
+	fileTypesArr := strings.Split(fileName, ".")
+	if len(fileTypesArr) >= 2 {
+		fileType := fileTypesArr[len(fileTypesArr)-1]
+		switch fileType {
+		case "html":
+			returnString = "text/html"
+		case "css":
+			returnString = "text/css"
+		case "js":
+			returnString = "application/javascript"
+		case "png":
+			returnString = "image/png"
+		case "jpeg":
+			returnString = "image/jpeg"
+		case "gif":
+			returnString = "audio/mpeg"
+		case "mpeg":
+			returnString = "audio/mpeg"
+		case "json":
+			returnString = "application/json"
+		case "ico":
+			returnString = "image/x-icon"
+		default:
+			returnString = "text/plain"
+		}
+	} else {
+		return returnString, errors.New("incorrect file name format")
+	}
+	return returnString, nil
 }
 
 //TODO: move this to the proper file
 func getFile(name string) FileStruct {
-	absPath, _ := filepath.Abs(name)
 	result := FileStruct{}
+	absPath, err := filepath.Abs(name)
+	if err != nil {
+		result.Error = err
+	}
 	info, err := os.Stat(absPath) //check if file exists
 	//check the error to make sure it is os.IsNotExist(err)
 	if err == nil {
@@ -192,14 +231,16 @@ func getFile(name string) FileStruct {
 		file, err := os.Open(absPath)
 		defer file.Close()
 		if err != nil {
-			log.Fatal(err)
+			result.Error = err
 		} else {
 			data, err := ioutil.ReadAll(file)
 			if err != nil {
-				log.Fatal(err)
+				result.Error = err
 			}
 			result.Bytes = data
 		}
+	} else {
+		result.Error = err
 	}
 	//TODO: change this to have a second return var for errors
 	return result //return empty byte array if not found
