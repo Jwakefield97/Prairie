@@ -10,5 +10,22 @@
             <input type="text" name="name">
             <input type="submit" value="Upload Name" name="submit">
         </form>
+
+        <code>
+            <a href="/template">render the below template</a> 
+            <pre>
+                app.Get("/template", func(routeObj *prairie.RouteObject) {
+                    routeObj.Response.Template = "temp"
+                    routeObj.Response.TemplateParams = TodoPageData{
+                        PageTitle: "My TODO list",
+                        Todos: []Todo{
+                            {Title: "Task 1", Done: false},
+                            {Title: "Task 2", Done: true},
+                            {Title: "Task 3", Done: true},
+                        },
+                    }
+                })
+            </pre>
+        </code>
     </body>
 </html>
