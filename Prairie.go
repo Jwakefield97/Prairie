@@ -2,15 +2,12 @@ package prairie
 
 /*
 	This is the entry point to the framework. All helper functions/libraries are placed in the folder ./lib.
-	MAKE SURE THIS PROJECT IS LOCATED IN YOUR SRC FOLDER OF GO PATH UNDER THE FOLDER "prairie"
-
-	TODO: add authentication filter to routes. Use a function chaining pattern (like https://www.calhoun.io/using-functional-options-instead-of-method-chaining-in-go/).
-	With the chaining style it would look like app.Get("/admin",callBack).isAuthenticated(). Authenticate based on session vars that the user sets.
 
 	TODO: add lib to gzip reponse bodies https://golang.org/pkg/compress/gzip/
 */
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -18,6 +15,7 @@ import (
 	"path/filepath"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/Jwakefield97/prairie/lib/http"
 	"github.com/Jwakefield97/prairie/lib/utils"
@@ -25,6 +23,9 @@ import (
 
 // BufferSize - the size of the buffer to receive from the socket
 const BufferSize = 10000
+
+// KeepAlivePeriod - how long to keep a connection alive
+const KeepAlivePeriod = 30
 
 // Session - the session store to be accessed through routes https://golang.org/pkg/sync/
 var Session sync.Map
@@ -112,79 +113,103 @@ func (p Prairie) Start() {
 // This will be the function that is used to handle incoming requests in a new go routine
 func handleRequest(p Prairie, conn *net.TCPConn) {
 	defer conn.Close()
-	//read all of the request bytes
-	buf := make([]byte, BufferSize) // 10KB buffer. most browsers limit requests to 8KB. this needs to be changed to be more dynamic
-	bytesRead, err := conn.Read(buf)
-	if err != nil {
-		if err != io.EOF {
-			fmt.Println("read error:", err)
-		}
-	}
-	requestStr := string(buf)
-	headerLen, contentLen := utils.GetContentLength(requestStr)
+	isKeepAlive := false
+	for { // loop until keep alive is no longer valid
 
-	remainingBytes := contentLen - (bytesRead - headerLen) //calculate remaining bytes to be read
-
-	if remainingBytes > 0 { //if there is more content to pulled from the socket
-		newBuf := make([]byte, remainingBytes) //make a new buffer at the size of the existing bytes to pull from socket
-		_, err := conn.Read(newBuf)
+		//read all of the request bytes
+		buf := make([]byte, BufferSize) // 10KB buffer. most browsers limit requests to 8KB. this needs to be changed to be more dynamic
+		bytesRead, err := conn.Read(buf)
 		if err != nil {
 			if err != io.EOF {
-				fmt.Println("read error:", err)
+				p.Log.Error("Error occured while reading from connection - " + err.Error())
 			}
 		}
-		requestStr = string(append(buf, newBuf...)) //append the new buffer to the existing buffer
-	}
-	//fmt.Println(requestStr)
-	request := utils.ParseHTTPRequest(requestStr)
-	//TODO: set stay alive if the keep alive header is set
+		requestStr := string(buf)
+		headerLen, contentLen := utils.GetContentLength(requestStr)
 
-	//fmt.Println("\n*******************" + request.Cookies["lastName"] + "*********************\n")
+		remainingBytes := contentLen - (bytesRead - headerLen) //calculate remaining bytes to be read
 
-	routeObj := RouteObject{
-		Request:  request,
-		Response: p.DefaultResponse,
-		Session:  &Session,
+		if remainingBytes > 0 { //if there is more content to pulled from the socket
+			newBuf := make([]byte, remainingBytes) //make a new buffer at the size of the existing bytes to pull from socket
+			_, err := conn.Read(newBuf)
+			if err != nil {
+				if err != io.EOF {
+					p.Log.Error("Error occured while reading from connection - " + err.Error())
+				}
+			}
+			requestStr = string(append(buf, newBuf...)) //append the new buffer to the existing buffer
+		}
+
+		//fmt.Println(requestStr)
+		request := utils.ParseHTTPRequest(requestStr)
+
+		if strings.EqualFold(strings.TrimSpace(request.Headers["Connection"]), "keep-alive") { //if connection is keep alive
+			isKeepAlive = true
+		}
+
+		routeObj := RouteObject{
+			Request:  request,
+			Response: p.DefaultResponse,
+			Session:  &Session,
+		}
+
+		//canGzip := strings.Contains(strings.ToLower(request.Headers["Accept-Encoding"]), "gzip") //check whether the message can be gzipped
+		canGzip := false
+		responseMsg, responseError := getReponseFromPath(&p, &routeObj, canGzip, isKeepAlive)
+
+		if len(responseMsg) <= 0 { //if less than 0 it is an invalid request
+			p.Log.Error("An internal server error was encountered")
+			responseMsg = http.ResponseToBytes(http.GetErrorMessage("500 Internal Server Error", http.HTTP_INTERNAL_SERVER_ERROR))
+		}
+
+		if isKeepAlive && responseError == nil {
+			conn.Write(responseMsg) //send message over connection
+			conn.SetKeepAlive(true)
+			conn.SetKeepAlivePeriod(KeepAlivePeriod * time.Second)
+		} else {
+			conn.Write(responseMsg) //send message over connection
+			break
+		}
+
+		responseMsg = nil
 	}
+}
+
+// getReponseFromPath - get the response from the path whether it is found or not
+func getReponseFromPath(p *Prairie, routeObj *RouteObject, canGzip bool, isKeepAlive bool) ([]byte, error) {
 	responseMsg := make([]byte, 0)
-	//canGzip := strings.Contains(strings.ToLower(request.Headers["Accept-Encoding"]), "gzip") //check whether the message can be gzipped
-	canGzip := false
+	var returnError error
 
 	//match routes and call callback
-	if strings.EqualFold(request.Type, "get") {
-		if callback, ok := p.getMappings[request.Path]; ok { //if mapping was found
-			callback(&routeObj)
-			responseMsg = http.FormHTTPResponse(&routeObj.Response, p.TemplateDir, canGzip)
+	if strings.EqualFold(routeObj.Request.Type, "get") {
+		if callback, ok := p.getMappings[routeObj.Request.Path]; ok { //if mapping was found
+			callback(routeObj)
+			responseMsg, returnError = http.FormHTTPResponse(&routeObj.Response, p.TemplateDir, canGzip, isKeepAlive, KeepAlivePeriod)
 		} else {
 			//try to find static resource if not matched by route
-			if strings.HasPrefix(request.Path[1:], p.ResourceDir) { //if a public resource was requested
-				fmt.Println(request.Path)
-				routeObj.Response.File = request.Path[1:]
-				responseMsg = http.FormHTTPResponse(&routeObj.Response, p.TemplateDir, canGzip)
+			if strings.HasPrefix(routeObj.Request.Path[1:], p.ResourceDir) { //if a public resource was requested
+				routeObj.Response.File = routeObj.Request.Path[1:]
+				responseMsg, returnError = http.FormHTTPResponse(&routeObj.Response, p.TemplateDir, canGzip, isKeepAlive, KeepAlivePeriod)
+				returnError = errors.New("post mapping not found")
 			} else {
-				p.Log.Access("Not Found (GET) - " + request.Path) // log path not found
+				p.Log.Access("Not Found (GET) - " + routeObj.Request.Path) // log path not found
 				responseMsg = http.ResponseToBytes(http.GetErrorMessage("404 Path Not Found", http.HTTP_NOT_FOUND))
 			}
 		}
-	} else if strings.EqualFold(request.Type, "post") {
-		if callback, ok := p.postMappings[request.Path]; ok {
-			callback(&routeObj)
-			responseMsg = http.FormHTTPResponse(&routeObj.Response, p.TemplateDir, canGzip)
+	} else if strings.EqualFold(routeObj.Request.Type, "post") {
+		if callback, ok := p.postMappings[routeObj.Request.Path]; ok {
+			callback(routeObj)
+			responseMsg, returnError = http.FormHTTPResponse(&routeObj.Response, p.TemplateDir, canGzip, isKeepAlive, KeepAlivePeriod)
 		} else {
-			p.Log.Access("Not Found (POST) - " + request.Path) // log path not found
+			p.Log.Access("Not Found (POST) - " + routeObj.Request.Path) // log path not found
 			responseMsg = http.ResponseToBytes(http.GetErrorMessage("404 Path Not Found", http.HTTP_NOT_FOUND))
+			returnError = errors.New("post mapping not found")
 		}
 
 	} else {
-		p.Log.Access("Unknown Request Type (" + request.Type + ") - " + request.Path) // unknown request type
+		p.Log.Access("Unknown Request Type (" + routeObj.Request.Type + ") - " + routeObj.Request.Path) // unknown request type
 		responseMsg = http.ResponseToBytes(http.GetErrorMessage("404 Path Not Found", http.HTTP_METHOD_NOT_ALLOWED))
+		returnError = errors.New("post mapping not found")
 	}
-
-	if len(responseMsg) <= 0 { //if less than 0 it is an invalid request
-		p.Log.Error("An internal server error was encountered")
-		responseMsg = http.ResponseToBytes(http.GetErrorMessage("500 Internal Server Error", http.HTTP_INTERNAL_SERVER_ERROR))
-	}
-
-	conn.Write(responseMsg) //send message over connection
-	responseMsg = nil
+	return responseMsg, returnError
 }

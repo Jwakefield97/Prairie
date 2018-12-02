@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"compress/gzip"
 	"errors"
-	"fmt"
 	"html/template"
 	"io/ioutil"
 	"os"
@@ -19,8 +18,6 @@ import (
 	will be passed to the corresponding callback function when a route is matched so that the user can modify
 	response headers and payload.
 */
-
-//TODO: add struct functions to deal with templates and various operations by the user
 
 // Response - a struct to model/modify responses.
 type Response struct {
@@ -90,12 +87,19 @@ func GetErrorMessage(message string, httpStatus int) *Response {
 }
 
 // FormHTTPResponse - a function to form the actual http response
-func FormHTTPResponse(response *Response, templatePath string, canGzip bool) []byte {
+func FormHTTPResponse(response *Response, templatePath string, canGzip bool, isKeepAlive bool, keepAlivePeriod int) ([]byte, error) {
+	var returnError error
 	message := make([]byte, 0)
 	response.Headers["Date"] = time.Now().Format(time.RFC1123)
-	response.Headers["Connection"] = "close"
 	response.Headers["Server"] = "Prairie"
 	response.Headers["Accept-Ranges"] = "bytes"
+
+	if isKeepAlive {
+		response.Headers["Connection"] = "Keep-Alive"
+		response.Headers["Keep-Alive"] = "timeout=" + strconv.Itoa(keepAlivePeriod) + ", max=10"
+	} else {
+		response.Headers["Connection"] = "close"
+	}
 
 	if strings.TrimSpace(response.Html) != "" { //if html response
 		response.Payload = []byte(response.Html)
@@ -117,7 +121,7 @@ func FormHTTPResponse(response *Response, templatePath string, canGzip bool) []b
 
 		var tempBuf bytes.Buffer                                                //buffer to temporarily store template
 		if err := tmpl.Execute(&tempBuf, response.TemplateParams); err != nil { //give invalid response if error occurs
-			fmt.Println(err)
+			returnError = errors.New("file not found")
 		}
 
 		response.Payload = []byte(tempBuf.String()) //set the payload of the response
@@ -132,9 +136,11 @@ func FormHTTPResponse(response *Response, templatePath string, canGzip bool) []b
 				response.Headers["Content-Type"] = contentType
 			} else {
 				response = GetErrorMessage("404 not found", HTTP_NOT_FOUND) // if something was wrong with the file name
+				returnError = errors.New("file not found")
 			}
 		} else {
 			response = GetErrorMessage("404 not found", HTTP_NOT_FOUND) // file was not found
+			returnError = errors.New("file not found")
 		}
 	}
 	if canGzip {
@@ -143,7 +149,7 @@ func FormHTTPResponse(response *Response, templatePath string, canGzip bool) []b
 	}
 	response.Headers["Content-Length"] = strconv.Itoa(len(response.Payload))
 	message = ResponseToBytes(response)
-	return message
+	return message, returnError
 }
 
 // ResponseToBytes - convert a Reponse struct to a byte array
@@ -173,13 +179,6 @@ func GzipResponseBody(response *Response) {
 	writer.Write(response.Payload)
 	response.Payload = buffer.Bytes()
 
-}
-
-// FileStruct - a struct to hold the file data and information about the file
-type FileStruct struct {
-	Info  os.FileInfo
-	Bytes []byte
-	Error error
 }
 
 // getFileContentType - a function to get the content type of a given file
@@ -216,7 +215,14 @@ func getFileContentType(fileName string) (string, error) {
 	return returnString, nil
 }
 
-//TODO: move this to the proper file
+// FileStruct - a struct to hold the file data and information about the file
+type FileStruct struct {
+	Info  os.FileInfo
+	Bytes []byte
+	Error error
+}
+
+// getFile - a function to get files and their information
 func getFile(name string) FileStruct {
 	result := FileStruct{}
 	absPath, err := filepath.Abs(name)
@@ -242,6 +248,5 @@ func getFile(name string) FileStruct {
 	} else {
 		result.Error = err
 	}
-	//TODO: change this to have a second return var for errors
 	return result //return empty byte array if not found
 }
