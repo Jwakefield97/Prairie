@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/Jwakefield97/prairie"
 )
 
@@ -22,7 +20,6 @@ type TodoPageData struct {
 	This is a test file to implement the framework and test it as is developed.
 */
 func main() {
-	fmt.Println("This is the a driver to test the framework.")
 	app := prairie.NewPrairieInstance("localhost", 2000)
 	app.ResourceDir = "resources"
 	app.TemplateDir = "templates"
