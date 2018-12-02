@@ -5,6 +5,7 @@
 godoc -url http://localhost:6060/pkg/github.com/Jwakefield97/prairie/ > docs/templates/prairie.html
 godoc -url http://localhost:6060/pkg/github.com/Jwakefield97/prairie/lib/utils/ > docs/templates/utils.html
 godoc -url http://localhost:6060/pkg/github.com/Jwakefield97/prairie/lib/http/ > docs/templates/http.html
+godoc -url http://localhost:6060/pkg/builtin/ > docs/templates/builtin.html
 
 #css
 godoc -url http://localhost:6060/lib/godoc/style.css > docs/resources/css/style.css
