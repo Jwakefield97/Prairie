@@ -54,17 +54,17 @@ func appendToFile(message string, filePath string) {
 // Error - log an error
 func (l Log) Error(message string) {
 	logPath := l.Path + "/error.txt"
-	appendToFile(message, logPath)
+	go appendToFile(message, logPath)
 }
 
 // Debug - log a debug message
 func (l Log) Debug(message string) {
 	logPath := l.Path + "/debug.txt"
-	appendToFile(message, logPath)
+	go appendToFile(message, logPath)
 }
 
 // Access - log an access message
 func (l Log) Access(message string) {
 	logPath := l.Path + "/access.txt"
-	appendToFile(message, logPath)
+	go appendToFile(message, logPath)
 }

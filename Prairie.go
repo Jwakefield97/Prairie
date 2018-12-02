@@ -147,31 +147,30 @@ func handleRequest(p Prairie, conn *net.TCPConn) {
 		Session:  &Session,
 	}
 	responseMsg := make([]byte, 0)
-	canGzip := strings.Contains(strings.ToLower(request.Headers["Accept-Encoding"]), "gzip") //check whether the message can be gzipped
-
+	//canGzip := strings.Contains(strings.ToLower(request.Headers["Accept-Encoding"]), "gzip") //check whether the message can be gzipped
+	canGzip := false
 	//match routes and call callback
 	if strings.EqualFold(request.Type, "get") {
 		if callback, ok := p.getMappings[request.Path]; ok { //if mapping was found
 			callback(&routeObj)
 			responseMsg = http.FormHTTPResponse(&routeObj.Response, p.TemplateDir, canGzip)
-			p.Log.Access("Found (GET) - " + request.Path) // log the found path
 		} else {
 			//try to find static resource if not matched by route
 			if strings.HasPrefix(request.Path[1:], p.ResourceDir) { //if a public resource was requested
 				fmt.Println(request.Path)
 				routeObj.Response.File = request.Path[1:]
 				responseMsg = http.FormHTTPResponse(&routeObj.Response, p.TemplateDir, canGzip)
-				p.Log.Access("Found (GET) - " + request.Path) // log the found path
+			} else {
+				p.Log.Access("Not Found (GET) - " + request.Path) // log path not found
 			}
-			p.Log.Access("Not Found (GET) - " + request.Path) // log path not found
 		}
 	} else if strings.EqualFold(request.Type, "post") {
 		if callback, ok := p.postMappings[request.Path]; ok {
 			callback(&routeObj)
 			responseMsg = http.FormHTTPResponse(&routeObj.Response, p.TemplateDir, canGzip)
-			p.Log.Access("Found (POST) - " + request.Path) // log path found
+		} else {
+			p.Log.Access("Not Found (POST) - " + request.Path) // log path not found
 		}
-		p.Log.Access("Not Found (POST) - " + request.Path) // log path not found
 
 	} else {
 		p.Log.Access("Unknown Request Type (" + request.Type + ") - " + request.Path) // unknown request type

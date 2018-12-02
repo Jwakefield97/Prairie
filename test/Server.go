@@ -63,6 +63,7 @@ func main() {
 	app.Post("/upload", func(routeObj *prairie.RouteObject) {
 		routeObj.Response.Text = "Your name is: " + routeObj.Request.Body["name"]
 		app.Log.Debug("Uploaded name field: " + routeObj.Request.Body["name"])
+		app.Log.Access("Post was hit: " + routeObj.Request.Path)
 	})
 
 	app.Get("/logs/error", func(routeObj *prairie.RouteObject) {
