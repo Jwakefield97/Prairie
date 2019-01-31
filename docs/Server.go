@@ -83,7 +83,7 @@ func main() {
 
 	app.Post("/upload", func(routeObj *prairie.RouteObject) {
 		routeObj.Response.SetCookie("name", routeObj.Request.Body["name"], 10000)
-		routeObj.Response.Text = "Your name is: " + routeObj.Request.Body["name"]
+		routeObj.Response.Html = "Your name is: " + routeObj.Request.Body["name"] + "<br><a href='/examples'>examples page</a>"
 		app.Log.Debug("Uploaded name field: " + routeObj.Request.Body["name"])
 		app.Log.Access("Post was hit: " + routeObj.Request.Path)
 	})

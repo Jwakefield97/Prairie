@@ -68,12 +68,96 @@
 		</div>
 		<!-- The package's Name is printed as title by the top-level template -->
 		<div id="pkg-overview" class="toggleVisible">
-			<div class="collapsed">
-				<h2 class="toggleButton" title="Click to show Overview section">Overview ▹</h2>
-			</div>
 			<div class="expanded">
+				<h2 class="toggleButton" title="Click to show Overview section">Overview ▹</h2>
+				<div>
+					Prairie is a web application frame work written in Golang. It has common web app framework functionality like: GET/POST request parsing, 
+					path matching, response forming, static resource handling, logging, cookie handling, and a session data structure.
+				</div>
+			</div>
+			<div class="collapsed">
 				<h2 class="toggleButton" title="Click to hide Overview section">Overview ▾</h2>
-				
+				<div>
+					Example:
+					<pre>
+						package main
+
+						import (
+							"github.com/Jwakefield97/prairie"
+						)
+						
+						// Todo - a struct to test nesting structs in a template
+						type Todo struct {
+							Title string
+							Done  bool
+						}
+						
+						// TodoPageData - a struct to test template rendering and params
+						type TodoPageData struct {
+							PageTitle string
+							Todos     []Todo
+						}
+						
+						func main() {
+							app := prairie.NewPrairieInstance("localhost", 2000)
+							app.ResourceDir = "resources"
+							app.TemplateDir = "templates"
+							app.SetLogPath("logs")
+						
+							app.Get("/temp", func(routeObj *prairie.RouteObject) {
+								routeObj.Response.Template = "temp"
+								routeObj.Response.TemplateParams = TodoPageData{
+									PageTitle: "My TODO list",
+									Todos: []Todo{
+										{Title: "Task 1", Done: false},
+										{Title: "Task 2", Done: true},
+										{Title: "Task 3", Done: true},
+									},
+								}
+							})
+						
+							app.Get("/plain", func(routeObj *prairie.RouteObject) {
+								routeObj.Response.SetCookie("lastName", "wakefield", 10000)
+								routeObj.Response.File = "templates/test.g"
+							})
+						
+							app.Get("/index", func(routeObj *prairie.RouteObject) {
+								val, ok := routeObj.Session.Load("firstKey")
+								if ok {
+									routeObj.Response.Html = val.(string) + "<b>Hello from the index page</b>"
+								} else {
+									routeObj.Response.Html = "<b>Hello from the index page</b>"
+						
+								}
+							})
+						
+							app.Get("/file", func(routeObj *prairie.RouteObject) {
+								routeObj.Session.Store("firstKey", "my stored value")
+								routeObj.Response.File = "templates/test.html"
+							})
+						
+							app.Post("/upload", func(routeObj *prairie.RouteObject) {
+								routeObj.Response.Text = "Your name is: " + routeObj.Request.Body["name"]
+								app.Log.Debug("Uploaded name field: " + routeObj.Request.Body["name"])
+								app.Log.Access("Post was hit: " + routeObj.Request.Path)
+							})
+						
+							app.Get("/logs/error", func(routeObj *prairie.RouteObject) {
+								routeObj.Response.File = "logs/error.txt"
+							})
+						
+							app.Get("/logs/debug", func(routeObj *prairie.RouteObject) {
+								routeObj.Response.File = "logs/debug.txt"
+							})
+						
+							app.Get("/logs/access", func(routeObj *prairie.RouteObject) {
+								routeObj.Response.File = "logs/access.txt"
+							})
+						
+							app.Start()
+						}
+					</pre>
+				</div>
 			</div>
 		</div>
 		
@@ -220,8 +304,8 @@ Prairie - the server struct to act as an interface to the framework.
 </p>
 
 			<pre>type Prairie struct {
-<span id="Prairie.TemplateDir"></span>    TemplateDir <a href="/builtin//#string">string</a>
-<span id="Prairie.ResourceDir"></span>    ResourceDir <a href="/builtin//#string">string</a>
+<span id="Prairie.TemplateDir"></span>    TemplateDir <a href="/builtin/#string">string</a>
+<span id="Prairie.ResourceDir"></span>    ResourceDir <a href="/builtin/#string">string</a>
 
 <span id="Prairie.DefaultResponse"></span>    DefaultResponse <a href="/http/">http</a>.<a href="/http/#Response">Response</a>
 <span id="Prairie.Log"></span>    Log             <a href="/utils/">utils</a>.<a href="/utils/#Log">Log</a> <span class="comment">//logger for the prairie instance</span>
@@ -241,7 +325,7 @@ Prairie - the server struct to act as an interface to the framework.
 				<h3 id="NewPrairieInstance">func <a href="#">NewPrairieInstance</a>
 					<a class="permalink" href="#NewPrairieInstance">&#xb6;</a>
 				</h3>
-				<pre>func NewPrairieInstance(ip <a href="/builtin//#string">string</a>, port <a href="/builtin//#int">int</a>) <a href="#Prairie">Prairie</a></pre>
+				<pre>func NewPrairieInstance(ip <a href="/builtin/#string">string</a>, port <a href="/builtin/#int">int</a>) <a href="#Prairie">Prairie</a></pre>
 				<p>
 NewPrairieInstance - a funciton to create a new Prairie server instance.
 </p>
@@ -255,7 +339,7 @@ NewPrairieInstance - a funciton to create a new Prairie server instance.
 				<h3 id="Prairie.Get">func (Prairie) <a href="#">Get</a>
 					<a class="permalink" href="#Prairie.Get">&#xb6;</a>
 				</h3>
-				<pre>func (p <a href="#Prairie">Prairie</a>) Get(url <a href="/builtin//#string">string</a>, callback <a href="#RequestCallback">RequestCallback</a>)</pre>
+				<pre>func (p <a href="#Prairie">Prairie</a>) Get(url <a href="/builtin/#string">string</a>, callback <a href="#RequestCallback">RequestCallback</a>)</pre>
 				<p>
 Get - a function for adding a get request mapping to the server.
 </p>
@@ -268,7 +352,7 @@ Get - a function for adding a get request mapping to the server.
 				<h3 id="Prairie.Post">func (Prairie) <a href="#">Post</a>
 					<a class="permalink" href="#Prairie.Post">&#xb6;</a>
 				</h3>
-				<pre>func (p <a href="#Prairie">Prairie</a>) Post(url <a href="/builtin//#string">string</a>, callback <a href="#RequestCallback">RequestCallback</a>)</pre>
+				<pre>func (p <a href="#Prairie">Prairie</a>) Post(url <a href="/builtin/#string">string</a>, callback <a href="#RequestCallback">RequestCallback</a>)</pre>
 				<p>
 Post - a function for adding a post request mapping to the server.
 </p>
@@ -281,7 +365,7 @@ Post - a function for adding a post request mapping to the server.
 				<h3 id="Prairie.SetLogPath">func (*Prairie) <a href="#">SetLogPath</a>
 					<a class="permalink" href="#Prairie.SetLogPath">&#xb6;</a>
 				</h3>
-				<pre>func (p *<a href="#Prairie">Prairie</a>) SetLogPath(path <a href="/builtin//#string">string</a>)</pre>
+				<pre>func (p *<a href="#Prairie">Prairie</a>) SetLogPath(path <a href="/builtin/#string">string</a>)</pre>
 				<p>
 SetLogPath - set the location of the log files
 </p>
@@ -449,7 +533,7 @@ Build version go1.10.3.<br>
 Except as <a href="https://developers.google.com/site-policies#restrictions">noted</a>,
 the content of this page is licensed under the
 Creative Commons Attribution 3.0 License,
-and code is licensed under a <a href="/LICENSE">BSD license</a>.<br>
+and code is licensed under a <a href="#">BSD license</a>.<br>
 <a href="http://www.google.com/intl/en/policies/privacy/">Privacy Policy</a>
 </div>
 

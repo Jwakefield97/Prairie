@@ -190,10 +190,10 @@ func getReponseFromPath(p *Prairie, routeObj *RouteObject, canGzip bool, isKeepA
 			if strings.HasPrefix(routeObj.Request.Path[1:], p.ResourceDir) { //if a public resource was requested
 				routeObj.Response.File = routeObj.Request.Path[1:]
 				responseMsg, returnError = http.FormHTTPResponse(&routeObj.Response, p.TemplateDir, canGzip, isKeepAlive, KeepAlivePeriod)
-				returnError = errors.New("post mapping not found")
 			} else {
 				p.Log.Access("Not Found (GET) - " + routeObj.Request.Path) // log path not found
 				responseMsg = http.ResponseToBytes(http.GetErrorMessage("404 Path Not Found", http.HTTP_NOT_FOUND))
+				returnError = errors.New("post mapping not found")
 			}
 		}
 	} else if strings.EqualFold(routeObj.Request.Type, "post") {

@@ -212,7 +212,7 @@ CreateLogFiles - a function to create the log files if they dont exist
 			<h2 id="GetContentLength">func <a href="#">GetContentLength</a>
 				<a class="permalink" href="#GetContentLength">&#xb6;</a>
 			</h2>
-			<pre>func GetContentLength(requestStr <a href="/builtin//#string">string</a>) (<a href="/builtin//#int">int</a>, <a href="/builtin//#int">int</a>)</pre>
+			<pre>func GetContentLength(requestStr <a href="/builtin/#string">string</a>) (<a href="/builtin/#int">int</a>, <a href="/builtin/#int">int</a>)</pre>
 			<p>
 GetContentLength - a function to get only the header/content length from the request string
 </p>
@@ -240,7 +240,7 @@ ParseCookies - a function to parse the cookies out of a given request header.
 			<h2 id="ParseHTTPRequest">func <a href="#">ParseHTTPRequest</a>
 				<a class="permalink" href="#ParseHTTPRequest">&#xb6;</a>
 			</h2>
-			<pre>func ParseHTTPRequest(requestStr <a href="/builtin//#string">string</a>) <a href="/http/">http</a>.<a href="/http/#Request">Request</a></pre>
+			<pre>func ParseHTTPRequest(requestStr <a href="/builtin/#string">string</a>) <a href="/http/">http</a>.<a href="/http/#Request">Request</a></pre>
 			<p>
 ParseHTTPRequest - parse an incoming http request and return a Request struct
 </p>
@@ -260,7 +260,7 @@ Log - the logger used to log errors, debug, and access information
 </p>
 
 			<pre>type Log struct {
-<span id="Log.Path"></span>    Path <a href="/builtin//#string">string</a> <span class="comment">//location of the log files</span>
+<span id="Log.Path"></span>    Path <a href="/builtin/#string">string</a> <span class="comment">//location of the log files</span>
 }</pre>
 
 			
@@ -276,7 +276,7 @@ Log - the logger used to log errors, debug, and access information
 				<h3 id="NewLog">func <a href="3">NewLog</a>
 					<a class="permalink" href="#NewLog">&#xb6;</a>
 				</h3>
-				<pre>func NewLog(path <a href="/builtin//#string">string</a>) <a href="#Log">Log</a></pre>
+				<pre>func NewLog(path <a href="/builtin/#string">string</a>) <a href="#Log">Log</a></pre>
 				<p>
 NewLog - return a new log instance
 </p>
@@ -290,7 +290,7 @@ NewLog - return a new log instance
 				<h3 id="Log.Access">func (Log) <a href="#">Access</a>
 					<a class="permalink" href="#Log.Access">&#xb6;</a>
 				</h3>
-				<pre>func (l <a href="#Log">Log</a>) Access(message <a href="/builtin//#string">string</a>)</pre>
+				<pre>func (l <a href="#Log">Log</a>) Access(message <a href="/builtin/#string">string</a>)</pre>
 				<p>
 Access - log an access message
 </p>
@@ -303,7 +303,7 @@ Access - log an access message
 				<h3 id="Log.Debug">func (Log) <a href="#">Debug</a>
 					<a class="permalink" href="#Log.Debug">&#xb6;</a>
 				</h3>
-				<pre>func (l <a href="#Log">Log</a>) Debug(message <a href="/builtin//#string">string</a>)</pre>
+				<pre>func (l <a href="#Log">Log</a>) Debug(message <a href="/builtin/#string">string</a>)</pre>
 				<p>
 Debug - log a debug message
 </p>
@@ -316,7 +316,7 @@ Debug - log a debug message
 				<h3 id="Log.Error">func (Log) <a href="#">Error</a>
 					<a class="permalink" href="#Log.Error">&#xb6;</a>
 				</h3>
-				<pre>func (l <a href="#Log">Log</a>) Error(message <a href="/builtin//#string">string</a>)</pre>
+				<pre>func (l <a href="#Log">Log</a>) Error(message <a href="/builtin/#string">string</a>)</pre>
 				<p>
 Error - log an error
 </p>

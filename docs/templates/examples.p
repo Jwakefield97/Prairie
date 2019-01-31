@@ -6,7 +6,7 @@
     <body>
         <span>Name from cookie: {{.Name}}</span>
         <form action="/upload" method="post">
-            Select image to upload:
+            Type name to upload:
             <input type="text" name="name">
             <input type="submit" value="Upload Name" name="submit">
         </form>
